@@ -52,6 +52,12 @@
     background-color: rebeccapurple;
 }
 
+.marble.checked {
+    background-color: white;
+}
+
+
+
 .next-marble.marble{
     display: inline-block;
     margin:5px;
