@@ -1,2 +1,2 @@
 # five-or-more
-JS clone of five or more game
+Web clone of five or more game
