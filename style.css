@@ -1,0 +1,60 @@
+.table {
+    width: 630px;
+    min-width: 630px;
+    height: 630px;
+    min-height: 630px;
+    border: 3px solid darkcyan;
+    background-color: aliceblue;
+    border-collapse: collapse;
+}
+
+.cell {
+    width: 70px;
+    height: 70px;
+    border: 1px solid darkcyan;
+}
+
+.selected {
+    box-shadow: 0 0 20px white;
+}
+
+.marble {
+    border-radius: 50%;
+    width: 70px;
+    height: 70px;
+}
+
+.marble.red {
+    background-color: red;
+}
+
+.marble.green {
+    background-color: forestgreen;
+}
+
+.marble.orange {
+    background-color: orange;
+}
+
+.marble.lightblue {
+    background-color: lightskyblue;
+}
+
+.marble.blue {
+    background-color: blue;
+}
+
+.marble.yellow {
+    background-color: yellow;
+}
+
+.marble.purple {
+    background-color: rebeccapurple;
+}
+
+.next-marble.marble{
+    display: inline-block;
+    margin:5px;
+    width: 20px;
+    height: 20px;
+}
