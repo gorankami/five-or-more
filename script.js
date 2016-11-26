@@ -120,7 +120,7 @@ function click(event) {
       var isPathFund = findPath(startPoint, endPoint);
       if (isPathFund) {
         moveMarble(selected, cell);
-        if(!clearFiveOrMore()) {
+        if (!clearFiveOrMore()) {
           setThreeRandomMarbles();
           //if random marbles complete a line by accident
           clearFiveOrMore();
@@ -176,14 +176,20 @@ function Point(x, y) {
 }
 
 function clearFiveOrMore() {
+  var transponedTable         = transpone(table);
+  var diagonalizedTable       = diagonalizeTable(table);
+  var transponedDiagonalTable = transpone(diagonalizedTable);
+
   var results = [];
   results     = results.concat(findFiveOrMoreInMatrix(table));
+  results     = results.concat(findFiveOrMoreInMatrix(transponedTable));
+  results     = results.concat(findFiveOrMoreInMatrix(diagonalizedTable));
+  results     = results.concat(findFiveOrMoreInMatrix(transponedDiagonalTable));
 
-  var transponedTable = transpone(table);
-  results             = results.concat(findFiveOrMoreInMatrix(transponedTable));
   results.forEach(function (cell) {
     cell.children[0].className = MARBLE_CLASS.CLEAR;
   });
+
   return results.length;
 }
 
@@ -205,10 +211,12 @@ function findFiveOrMoreInMatrix(matrix) {
   for (var row = 0; row < matrix.length; row++) {
     var rowResults = [1];
     for (var col = 1; col < matrix[row].length; col++) {
-      if (matrix[row][col].children[0].className === matrix[row][col - 1].children[0].className && matrix[row][col - 1].children[0].className != MARBLE_CLASS.CLEAR) {
-        rowResults[col] = rowResults[col - 1] + 1;
-      } else {
-        rowResults[col] = 1;
+      if(matrix[row][col] && matrix[row][col - 1]){
+        if (matrix[row][col].children[0].className === matrix[row][col - 1].children[0].className && matrix[row][col - 1].children[0].className != MARBLE_CLASS.CLEAR) {
+          rowResults[col] = rowResults[col - 1] + 1;
+        } else {
+          rowResults[col] = 1;
+        }
       }
     }
     for (var i = rowResults.length - 1; i >= 0; i--) {
@@ -223,4 +231,24 @@ function findFiveOrMoreInMatrix(matrix) {
   return results;
 }
 
-//TODO complete diagonal findFiveOrMore
+function diagonalizeTable(matrix) {
+  var diagonalizedTable = [];
+  for (var j = 0; j < tableWidth + tableHeight - 1; j++) {
+    var row = [];
+    for (var i = j; i >= 0; i--) {
+      if (i < tableHeight && (j-i) < tableWidth) {
+        row.push(matrix[i][j-i]);
+      } else {
+        row.push(null);
+      }
+    }
+    diagonalizedTable.push(row);
+  }
+  //fix missing cells
+  for (var i = 0; i < tableWidth + tableHeight - 1; i++) {
+    for (var j = 0; j < tableWidth + tableHeight - 1; j++) {
+      if(!diagonalizedTable[i][j]) diagonalizedTable[i][j] = null;
+    }
+  }
+  return diagonalizedTable;
+}
