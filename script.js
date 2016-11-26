@@ -178,7 +178,7 @@ function Point(x, y) {
 function clearFiveOrMore() {
   var transponedTable         = transpone(table);
   var diagonalizedTable       = diagonalizeTable(table);
-  var transponedDiagonalTable = transpone(diagonalizedTable);
+  var transponedDiagonalTable = diagonalizeTable(transponedTable);//doesnt really work
 
   var results = [];
   results     = results.concat(findFiveOrMoreInMatrix(table));
@@ -198,11 +198,12 @@ function transpone(normalTable) {
   normalTable[0].forEach(function (i, index) {
     transponedTable[index] = [];
   });
-  normalTable.forEach(function (row, indexRow) {
-    row.forEach(function (col, indexCol) {
-      transponedTable[indexCol][indexRow] = normalTable[indexRow][indexCol]
-    })
-  });
+  for (var indexRow = 0; indexRow < normalTable.length; indexRow++) {
+    for (var indexCol = 0; indexCol < normalTable[indexRow].length; indexCol++) {
+      transponedTable[indexCol][indexRow] = normalTable[indexRow][indexCol];
+    }
+  }
+
   return transponedTable;
 }
 
@@ -211,7 +212,7 @@ function findFiveOrMoreInMatrix(matrix) {
   for (var row = 0; row < matrix.length; row++) {
     var rowResults = [1];
     for (var col = 1; col < matrix[row].length; col++) {
-      if(matrix[row][col] && matrix[row][col - 1]){
+      if (matrix[row][col] && matrix[row][col - 1]) {
         if (matrix[row][col].children[0].className === matrix[row][col - 1].children[0].className && matrix[row][col - 1].children[0].className != MARBLE_CLASS.CLEAR) {
           rowResults[col] = rowResults[col - 1] + 1;
         } else {
@@ -236,8 +237,8 @@ function diagonalizeTable(matrix) {
   for (var j = 0; j < tableWidth + tableHeight - 1; j++) {
     var row = [];
     for (var i = j; i >= 0; i--) {
-      if (i < tableHeight && (j-i) < tableWidth) {
-        row.push(matrix[i][j-i]);
+      if (i < tableHeight && (j - i) < tableWidth) {
+        row.push(matrix[i][j - i]);
       } else {
         row.push(null);
       }
@@ -247,7 +248,7 @@ function diagonalizeTable(matrix) {
   //fix missing cells
   for (var i = 0; i < tableWidth + tableHeight - 1; i++) {
     for (var j = 0; j < tableWidth + tableHeight - 1; j++) {
-      if(!diagonalizedTable[i][j]) diagonalizedTable[i][j] = null;
+      if (!diagonalizedTable[i][j]) diagonalizedTable[i][j] = null;
     }
   }
   return diagonalizedTable;
