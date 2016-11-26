@@ -6,7 +6,6 @@ var CELL_CLASS = {
 
 var MARBLE_CLASS = {
   CLEAR     : "marble",
-  CHECKED   : "marble checked",
   RED       : "marble red",
   GREEN     : "marble green",
   ORANGE    : "marble orange",
@@ -28,7 +27,8 @@ var marbleClasses = [
 
 var nextThreeMarbleClasses = [];
 
-var table = [];
+var table       = [];
+var tableMatrix = [];
 
 var tableWidth  = 9,
     tableHeight = 9;
@@ -40,8 +40,12 @@ function init() {
   for (var i = 0; i < tableHeight; i++) {
     var row = document.createElement("tr");
     tableElement.appendChild(row);
+    var tableRow = [];
     for (var j = 0; j < tableWidth; j++) {
       var cell       = document.createElement("td");
+      //set coordinates
+      cell.dataset.x = j;
+      cell.dataset.y = i;
       cell.className = CELL_CLASS.CLEAR;
 
       var marble       = document.createElement("div");
@@ -49,8 +53,10 @@ function init() {
       marble.onclick   = click;
       cell.appendChild(marble);
       row.appendChild(cell);
-      table.push(cell);
+      tableRow.push(cell);
+      tableMatrix.push(cell);
     }
+    table.push(tableRow);
   }
   setThreeRandomMarbles();
 }
@@ -76,7 +82,12 @@ function random(max) {
 }
 
 function getRandomClearMarble() {
-  var clearCells = table.map(function (cell) {
+
+  var arrayOfCells = [];
+  table.forEach(function (row) {
+    arrayOfCells = arrayOfCells.concat(row);
+  });
+  var clearCells = arrayOfCells.map(function (cell) {
     return cell.children ? cell.children[0] : null;
   }).filter(function (marble) {
     return !!marble && marble.className === MARBLE_CLASS.CLEAR;
@@ -103,16 +114,38 @@ function click(event) {
   } else {
     //selected one but
     if (isMarble(selected) && !isMarble(cell)) {
-      //var selectedCoordinates = new Point() //TODO find x and y for cstart
-      //var finish = pathFinder(selectedCoordinates,marble)
-      moveMarble(selected, cell);
+      var startPoint = new Point(Number(selected.dataset.x), Number(selected.dataset.y));
+      var endPoint   = new Point(Number(cell.dataset.x), Number(cell.dataset.y));
+      // var finish        = pathFinder(selectedPoint, marble);
+      var isPathFund = findPath(startPoint, endPoint);
+      if (isPathFund) {
+        moveMarble(selected, cell);
+        if(!clearFiveOrMore()) {
+          setThreeRandomMarbles();
+          //if random marbles complete a line by accident
+          clearFiveOrMore();
+        }
+      }
       deselect(selected);
-      setThreeRandomMarbles();
+
     } else {
       deselect(selected);
       select(cell);
     }
   }
+}
+
+function findPath(startPoint, endPoint) {
+  var grid = table.map(function (row) {
+    return row.map(function (cell) {
+      return cell.children[0].className === MARBLE_CLASS.CLEAR ? 1 : 0;
+    });
+  });
+
+  var graph = new Graph(grid);
+  var start = graph.grid[startPoint.y][startPoint.x];
+  var end   = graph.grid[endPoint.y][endPoint.x];
+  return astar.search(graph, start, end).length;
 }
 
 function select(element) {
@@ -137,57 +170,57 @@ function isMarble(element) {
   return marble.className !== MARBLE_CLASS.CLEAR;
 }
 
-function pathFinder(step, finish) {
-  if (!step) return null;
-  var currentMarble = getMarble(step);
-  if(currentMarble.className === MARBLE_CLASS.CLEAR) currentMarble.className =MARBLE_CLASS.CHECKED;
-  var up          = moveUp(step);
-  var marbleUp    = up ? getMarble(up) : null;
-  var down        = moveDown(step);
-  var marbleDown  = down ? getMarble(down) : null;
-  var left        = moveLeft(step);
-  var marbleLeft  = left ? getMarble(left) : null;
-  var right       = moveRight(step);
-  var marbleRight = right ? getMarble(right) : null;
-
-  //1. check if those are finish cells. if one of them is, return that cell
-  if (marbleUp === finish || marbleDown === finish || marbleLeft === finish || marbleRight === finish) {
-    return finish;
-  }
-
-  //2. No finals? Pick empty cells and run pathFinder on them, return || values or return null (none is found)
-  return (marbleUp.className === MARBLE_CLASS.CLEAR && pathFinder(up, finish)) ||
-    (marbleDown.className === MARBLE_CLASS.CLEAR && pathFinder(down, finish)) ||
-    (marbleLeft.className === MARBLE_CLASS.CLEAR && pathFinder(left, finish)) ||
-    (marbleRight.className === MARBLE_CLASS.CLEAR && pathFinder(right, finish)) || null;
-}
-
-function getMarble(step) {
-  var cell = table[step.y * tableHeight + step.x];
-  return cell && cell.children ? cell.children[0] : null;
-}
-
-function moveUp(step) {
-  if (step.y == 0) return null;
-  return new Point(step.x, step.y - 1);
-}
-
-function moveDown(step) {
-  if (step.y <= tableHeight) return null;
-  return new Point(step.x, step.y + 1);
-}
-
-function moveLeft(step) {
-  if (step.x == 0)return null;
-  return new Point(step.x - 1, step.y);
-}
-
-function moveRight(step) {
-  if (step.x <= tableWidth) return null;
-  return new Point(step.x + 1, step.y);
-}
-
 function Point(x, y) {
   this.x = x;
   this.y = y;
 }
+
+function clearFiveOrMore() {
+  var results = [];
+  results     = results.concat(findFiveOrMoreInMatrix(table));
+
+  var transponedTable = transpone(table);
+  results             = results.concat(findFiveOrMoreInMatrix(transponedTable));
+  results.forEach(function (cell) {
+    cell.children[0].className = MARBLE_CLASS.CLEAR;
+  });
+  return results.length;
+}
+
+function transpone(normalTable) {
+  var transponedTable = [];
+  normalTable[0].forEach(function (i, index) {
+    transponedTable[index] = [];
+  });
+  normalTable.forEach(function (row, indexRow) {
+    row.forEach(function (col, indexCol) {
+      transponedTable[indexCol][indexRow] = normalTable[indexRow][indexCol]
+    })
+  });
+  return transponedTable;
+}
+
+function findFiveOrMoreInMatrix(matrix) {
+  var results = [];
+  for (var row = 0; row < matrix.length; row++) {
+    var rowResults = [1];
+    for (var col = 1; col < matrix[row].length; col++) {
+      if (matrix[row][col].children[0].className === matrix[row][col - 1].children[0].className && matrix[row][col - 1].children[0].className != MARBLE_CLASS.CLEAR) {
+        rowResults[col] = rowResults[col - 1] + 1;
+      } else {
+        rowResults[col] = 1;
+      }
+    }
+    for (var i = rowResults.length - 1; i >= 0; i--) {
+      if (rowResults[i] >= 5) {
+        for (var j = rowResults[i]; j >= 1; j--) {
+          results.push(matrix[row][i]);
+          i--;
+        }
+      }
+    }
+  }
+  return results;
+}
+
+//TODO complete diagonal findFiveOrMore

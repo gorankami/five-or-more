@@ -1,0 +1,23 @@
+{
+  "name": "five-or-more",
+  "version": "1.0.0",
+  "description": "JS clone of five or more game",
+  "main": "script.js",
+  "dependencies": {
+    "javascript-astar": "^0.4.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gorankami/five-or-more.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gorankami/five-or-more/issues"
+  },
+  "homepage": "https://github.com/gorankami/five-or-more#readme"
+}
