@@ -1,11 +1,21 @@
+body{
+    font-family: "DejaVu Sans Mono";
+}
+
 .table {
+    margin:auto;
     width: 630px;
     min-width: 630px;
     height: 630px;
     min-height: 630px;
     border: 3px solid darkcyan;
-    background-color: aliceblue;
+    background-color: honeydew;
     border-collapse: collapse;
+}
+
+.next-marbles{
+    margin:auto;
+    text-align:center;
 }
 
 .cell {
@@ -15,7 +25,12 @@
 }
 
 .selected {
-    box-shadow: 0 0 20px white;
+    background-color: white;
+
+}
+
+.selected .marble {
+    box-shadow: 0 0 20px 10px yellow;
 }
 
 .marble {
@@ -26,30 +41,51 @@
 
 .marble.red {
     background-color: red;
+    border:1px solid darkred;
+    width: 68px;
+    height: 68px;
 }
 
 .marble.green {
     background-color: forestgreen;
+    border:1px solid darkgreen;
+    width: 68px;
+    height: 68px;
 }
 
 .marble.orange {
     background-color: orange;
+    border:1px solid orangered;
+    width: 68px;
+    height: 68px;
 }
 
 .marble.lightblue {
     background-color: lightskyblue;
+    border:1px solid dodgerblue;
+    width: 68px;
+    height: 68px;
 }
 
 .marble.blue {
     background-color: blue;
+    border:1px solid darkblue;
+    width: 68px;
+    height: 68px;
 }
 
 .marble.yellow {
     background-color: yellow;
+    border:1px solid orange;
+    width: 68px;
+    height: 68px;
 }
 
 .marble.purple {
     background-color: rebeccapurple;
+    border:1px solid gray;
+    width: 68px;
+    height: 68px;
 }
 
 .marble.checked {

@@ -1,9 +1,16 @@
+/**
+ * @desc Enumerator for cell classes
+ * @type {{CLEAR: string, SELECTED: string}}
+ */
 var CELL_CLASS = {
   CLEAR   : "cell",
   SELECTED: "cell selected"
 };
 
-
+/**
+ * @desc Enumerator for marble classes
+ * @type {{CLEAR: string, RED: string, GREEN: string, ORANGE: string, LIGHT_BLUE: string, BLUE: string, YELLOW: string, PURPLE: string}}
+ */
 var MARBLE_CLASS = {
   CLEAR     : "marble",
   RED       : "marble red",
@@ -15,6 +22,10 @@ var MARBLE_CLASS = {
   PURPLE    : "marble purple"
 };
 
+/**
+ * @desc Array of marble colors
+ * @type {MARBLE_CLASS[]}
+ */
 var marbleClasses = [
   MARBLE_CLASS.RED,
   MARBLE_CLASS.GREEN,
@@ -33,6 +44,9 @@ var tableMatrix = [];
 var tableWidth  = 9,
     tableHeight = 9;
 
+/**
+ * @desc initialization on page load
+ */
 function init() {
   setThreeRandomMarbleClasses();
   var tableElement = document.getElementsByTagName("table")[0];
@@ -61,6 +75,9 @@ function init() {
   setThreeRandomMarbles();
 }
 
+/**
+ * Sets next three random marbles
+ */
 function setThreeRandomMarbleClasses() {
   nextThreeMarbleClasses = [marbleClasses[random(6)], marbleClasses[random(6)], marbleClasses[random(6)]];
   for (var i in nextThreeMarbleClasses) {
@@ -68,6 +85,9 @@ function setThreeRandomMarbleClasses() {
   }
 }
 
+/**
+ * Prepares next three random marbles
+ */
 function setThreeRandomMarbles() {
   for (var marbleClass in nextThreeMarbleClasses) {
     var m = getRandomClearMarble();
@@ -76,13 +96,20 @@ function setThreeRandomMarbles() {
   setThreeRandomMarbleClasses()
 }
 
-
+/**
+ * Random number from 0 to max
+ * @param max {Integer}
+ * @returns {Integer}
+ */
 function random(max) {
   return Math.floor(Math.random() * max);
 }
 
+/**
+ * Gets a random space that is not occupied with a marble
+ * @returns {HTMLElement}
+ */
 function getRandomClearMarble() {
-
   var arrayOfCells = [];
   table.forEach(function (row) {
     arrayOfCells = arrayOfCells.concat(row);
@@ -99,8 +126,16 @@ function getRandomClearMarble() {
   }
 }
 
+/**
+ * Currently selected cell
+ * @type {null}
+ */
 var selected = null;
 
+/**
+ * Reacts to use move and renders a new state
+ * @param event {event}
+ */
 function click(event) {
   var marble = event.target;
   var cell   = marble.parentNode;
@@ -135,6 +170,12 @@ function click(event) {
   }
 }
 
+/**
+ * Uses A* path finding alghoritm to check if there is a path between startPoint and endPoint
+ * @param startPoint {Point}
+ * @param endPoint {Point}
+ * @returns {Boolean} true if there is a path
+ */
 function findPath(startPoint, endPoint) {
   var grid = table.map(function (row) {
     return row.map(function (cell) {
@@ -145,40 +186,68 @@ function findPath(startPoint, endPoint) {
   var graph = new Graph(grid);
   var start = graph.grid[startPoint.y][startPoint.x];
   var end   = graph.grid[endPoint.y][endPoint.x];
-  return astar.search(graph, start, end).length;
+  return !!astar.search(graph, start, end).length;
 }
 
+/**
+ * Marks table cell as selected
+ * @param element {HTMLElement}
+ */
 function select(element) {
   selected          = element;
   element.className = CELL_CLASS.SELECTED;
 }
 
+/**
+ * Clears DOM element from any marble class
+ * @param element {HTMLElement}
+ */
 function deselect(element) {
   selected          = null;
   element.className = CELL_CLASS.CLEAR;
 }
 
-function moveMarble(from, to) {
-  var fromMarble       = from.children[0];
-  var toMarble         = to.children[0];
-  toMarble.className   = fromMarble.className;
-  fromMarble.className = MARBLE_CLASS.CLEAR;
+/**
+ * Moves a marble from start to finish
+ * @param start {HTMLElement}
+ * @param finish {HTMLElement}
+ */
+function moveMarble(start, finish) {
+  var startMarble       = start.children[0];
+  var finishMarble         = finish.children[0];
+  finishMarble.className   = startMarble.className;
+  startMarble.className = MARBLE_CLASS.CLEAR;
 }
 
+/**
+ * Short check if current marble position holds a marble
+ * @param element {HTMLElement}
+ * @returns {boolean} true if it is a marble
+ */
 function isMarble(element) {
   var marble = element.children[0];
   return marble.className !== MARBLE_CLASS.CLEAR;
 }
 
+/**
+ * Simple point object for matrix coordinates
+ * @param x {Integer}
+ * @param y {Integer}
+ * @constructor
+ */
 function Point(x, y) {
   this.x = x;
   this.y = y;
 }
 
+/**
+ * @desc finds solutions of five or more marbles of the same type in 4 directions vertical, horizontal, and both diagonal
+ * @returns {Boolean} true if any marble is destroyed
+ */
 function clearFiveOrMore() {
-  var transponedTable         = transpone(table);
-  var diagonalizedTable       = diagonalizeTable(table);
-  var transponedDiagonalTable = diagonalizeTable(transponedTable);//doesnt really work
+  var transponedTable         = transponeMatrix(table);
+  var diagonalizedTable       = diagonalizeMatrix(table);
+  var transponedDiagonalTable = diagonalizeMatrix(mirrorMatrix(table));
 
   var results = [];
   results     = results.concat(findFiveOrMoreInMatrix(table));
@@ -190,23 +259,14 @@ function clearFiveOrMore() {
     cell.children[0].className = MARBLE_CLASS.CLEAR;
   });
 
-  return results.length;
+  return !!results.length;
 }
 
-function transpone(normalTable) {
-  var transponedTable = [];
-  normalTable[0].forEach(function (i, index) {
-    transponedTable[index] = [];
-  });
-  for (var indexRow = 0; indexRow < normalTable.length; indexRow++) {
-    for (var indexCol = 0; indexCol < normalTable[indexRow].length; indexCol++) {
-      transponedTable[indexCol][indexRow] = normalTable[indexRow][indexCol];
-    }
-  }
-
-  return transponedTable;
-}
-
+/**
+ * @desc finds solutions of five or more marbles of the same type in horizontal and returns found marbles
+ * @param matrix
+ * @returns {Array} Array of marbles that are destroyed
+ */
 function findFiveOrMoreInMatrix(matrix) {
   var results = [];
   for (var row = 0; row < matrix.length; row++) {
@@ -232,7 +292,35 @@ function findFiveOrMoreInMatrix(matrix) {
   return results;
 }
 
-function diagonalizeTable(matrix) {
+/**
+ * Matrix operation
+ * @desc transpones a matrix
+ * @example [[a11,a12],[a21,a22]] -> [[a11, a21],[a12,a22]]
+ * @param normalTable
+ * @returns {Array}
+ */
+function transponeMatrix(matrix) {
+  var transponedTable = [];
+  matrix[0].forEach(function (i, index) {
+    transponedTable[index] = [];
+  });
+  for (var indexRow = 0; indexRow < matrix.length; indexRow++) {
+    for (var indexCol = 0; indexCol < matrix[indexRow].length; indexCol++) {
+      transponedTable[indexCol][indexRow] = matrix[indexRow][indexCol];
+    }
+  }
+
+  return transponedTable;
+}
+
+/**
+ * Matrix operation
+ * @desc rotates the matrix by 45 degrees making diagonals turn into rows. The direction is analog to forward slash
+ * @example [[a11,a12],[a21,a22]] -> [[a11, null],[a12,a21],[null,a22]]
+ * @param matrix nxm
+ * @returns {Array} new matrix nxm with mirrored values
+ */
+function diagonalizeMatrix(matrix) {
   var diagonalizedTable = [];
   for (var j = 0; j < tableWidth + tableHeight - 1; j++) {
     var row = [];
@@ -252,4 +340,23 @@ function diagonalizeTable(matrix) {
     }
   }
   return diagonalizedTable;
+}
+
+/**
+ * Matrix operation
+ * @desc creates a mirror image of a matrix by y coordinate. Doesn't change the input
+ * @example [[a11,a12],[a21,a22]] -> [[a12,a11],[a22,a21]]
+ * @param matrix nxm
+ * @returns {Array} new matrix nxm mirrored
+ */
+function mirrorMatrix(matrix){
+  var mirroredMatrix = [];
+  matrix.forEach(function(row){
+    var mirroredRow = [];
+    for(var i = row.length-1;i>=0;i--){
+      mirroredRow.push(row[i]);
+    }
+    mirroredMatrix.push(mirroredRow);
+  });
+  return mirroredMatrix;
 }
