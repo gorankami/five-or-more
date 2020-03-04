@@ -1,11 +1,11 @@
-import {Graph, astar} from "javascript-astar"
+import { Graph, astar } from "javascript-astar"
 import { CELL_CLASS } from './CELL_CLASS';
 import { MARBLE_CLASS } from './MARBLE_CLASS';
 /**
  * @desc Array of marble colors
  * @type {MARBLE_CLASS[]}
  */
-const marbleClasses = [
+export const marbleClasses = [
   MARBLE_CLASS.RED,
   MARBLE_CLASS.GREEN,
   MARBLE_CLASS.ORANGE,
@@ -15,17 +15,17 @@ const marbleClasses = [
   MARBLE_CLASS.PURPLE
 ];
 
-let nextThreeMarbleClasses = [];
+let tableWidth = 9,
+  tableHeight = 9;
 
-
-let tableWidth  = 9,
-    tableHeight = 9;
+export function getThreeRandomMarbleClasses() {
+  return [marbleClasses[random(6)], marbleClasses[random(6)], marbleClasses[random(6)]];
+}
 
 /**
  * Sets next three random marbles
  */
-export function setThreeRandomMarbleClasses() {
-  nextThreeMarbleClasses = [marbleClasses[random(6)], marbleClasses[random(6)], marbleClasses[random(6)]];
+export function setThreeRandomMarbleClasses(nextThreeMarbleClasses) {
   for (let i in nextThreeMarbleClasses) {
     document.getElementById("next-" + i).className = "next-marble " + nextThreeMarbleClasses[i];
   }
@@ -34,7 +34,7 @@ export function setThreeRandomMarbleClasses() {
 /**
  * Prepares next three random marbles
  */
-export function setThreeRandomMarbles(table) {
+export function setThreeRandomMarbles(table, nextThreeMarbleClasses) {
   for (let marbleClass in nextThreeMarbleClasses) {
     const m = getRandomClearMarble(table);
     if (m) m.className = nextThreeMarbleClasses[marbleClass];
@@ -84,7 +84,7 @@ let selected = null;
  */
 export const click = table => event => {
   let marble = event.target;
-  let cell   = marble.parentNode;
+  let cell = marble.parentNode;
 
   if (!selected) {
     //first selection
@@ -96,7 +96,7 @@ export const click = table => event => {
     //selected one but
     if (isMarble(selected) && !isMarble(cell)) {
       let startPoint = new Point(Number(selected.dataset.x), Number(selected.dataset.y));
-      let endPoint   = new Point(Number(cell.dataset.x), Number(cell.dataset.y));
+      let endPoint = new Point(Number(cell.dataset.x), Number(cell.dataset.y));
       // let finish        = pathFinder(selectedPoint, marble);
       let isPathFund = findPath(table, startPoint, endPoint);
       if (isPathFund) {
@@ -131,7 +131,7 @@ function findPath(table, startPoint, endPoint) {
 
   let graph = new Graph(grid);
   let start = graph.grid[startPoint.y][startPoint.x];
-  let end   = graph.grid[endPoint.y][endPoint.x];
+  let end = graph.grid[endPoint.y][endPoint.x];
   return !!astar.search(graph, start, end).length;
 }
 
@@ -140,7 +140,7 @@ function findPath(table, startPoint, endPoint) {
  * @param element {HTMLElement}
  */
 function select(element) {
-  selected          = element;
+  selected = element;
   element.className = CELL_CLASS.SELECTED;
 }
 
@@ -149,7 +149,7 @@ function select(element) {
  * @param element {HTMLElement}
  */
 function deselect(element) {
-  selected          = null;
+  selected = null;
   element.className = CELL_CLASS.CLEAR;
 }
 
@@ -159,9 +159,9 @@ function deselect(element) {
  * @param finish {HTMLElement}
  */
 function moveMarble(start, finish) {
-  let startMarble       = start.children[0];
-  let finishMarble         = finish.children[0];
-  finishMarble.className   = startMarble.className;
+  let startMarble = start.children[0];
+  let finishMarble = finish.children[0];
+  finishMarble.className = startMarble.className;
   startMarble.className = MARBLE_CLASS.CLEAR;
 }
 
@@ -191,15 +191,15 @@ function Point(x, y) {
  * @returns {Boolean} true if any marble is destroyed
  */
 function clearFiveOrMore(table) {
-  let transponedTable         = transponeMatrix(table);
-  let diagonalizedTable       = diagonalizeMatrix(table);
+  let transponedTable = transponeMatrix(table);
+  let diagonalizedTable = diagonalizeMatrix(table);
   let transponedDiagonalTable = diagonalizeMatrix(mirrorMatrix(table));
 
   let results = [];
-  results     = results.concat(findFiveOrMoreInMatrix(table));
-  results     = results.concat(findFiveOrMoreInMatrix(transponedTable));
-  results     = results.concat(findFiveOrMoreInMatrix(diagonalizedTable));
-  results     = results.concat(findFiveOrMoreInMatrix(transponedDiagonalTable));
+  results = results.concat(findFiveOrMoreInMatrix(table));
+  results = results.concat(findFiveOrMoreInMatrix(transponedTable));
+  results = results.concat(findFiveOrMoreInMatrix(diagonalizedTable));
+  results = results.concat(findFiveOrMoreInMatrix(transponedDiagonalTable));
 
   results.forEach(function (cell) {
     cell.children[0].className = MARBLE_CLASS.CLEAR;
@@ -295,11 +295,11 @@ function diagonalizeMatrix(matrix) {
  * @param matrix nxm
  * @returns {Array} new matrix nxm mirrored
  */
-function mirrorMatrix(matrix){
+function mirrorMatrix(matrix) {
   let mirroredMatrix = [];
-  matrix.forEach(function(row){
+  matrix.forEach(function (row) {
     let mirroredRow = [];
-    for(let i = row.length-1;i>=0;i--){
+    for (let i = row.length - 1; i >= 0; i--) {
       mirroredRow.push(row[i]);
     }
     mirroredMatrix.push(mirroredRow);

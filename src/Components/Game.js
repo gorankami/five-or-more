@@ -1,19 +1,24 @@
 import React, { Component } from 'react';
+import p5 from 'p5';
 import './Game.css';
 import "../game/script"
-import { setThreeRandomMarbleClasses, setThreeRandomMarbles, click } from '../game/script';
+import { setThreeRandomMarbleClasses, setThreeRandomMarbles, click, getThreeRandomMarbleClasses } from '../game/script';
 import { CELL_CLASS } from '../game/CELL_CLASS';
 import { MARBLE_CLASS } from '../game/MARBLE_CLASS';
+import { getSketch } from '../game/sketch';
 
 
 let tableWidth = 9,
   tableHeight = 9;
 let tableMatrix = [];
-let table       = [];
+let table = [];
 
 export default class Game extends Component {
   componentDidMount() {
-    setThreeRandomMarbleClasses();
+
+    let myp5 = new p5(getSketch, document.getElementById('p5sketch'));
+    const nextMarbleClasses = getThreeRandomMarbleClasses();
+    setThreeRandomMarbleClasses(nextMarbleClasses);
     let tableElement = document.getElementsByTagName("table")[0];
 
     for (let i = 0; i < tableHeight; i++) {
@@ -37,7 +42,8 @@ export default class Game extends Component {
       }
       table.push(tableRow);
     }
-    setThreeRandomMarbles(table);
+    setThreeRandomMarbles(table, nextMarbleClasses);
+
   }
   render() {
     return (
