@@ -1,8 +1,10 @@
+import {Graph, astar} from "javascript-astar"
+
 /**
  * @desc Enumerator for cell classes
  * @type {{CLEAR: string, SELECTED: string}}
  */
-var CELL_CLASS = {
+const CELL_CLASS = {
   CLEAR   : "cell",
   SELECTED: "cell selected"
 };
@@ -11,7 +13,7 @@ var CELL_CLASS = {
  * @desc Enumerator for marble classes
  * @type {{CLEAR: string, RED: string, GREEN: string, ORANGE: string, LIGHT_BLUE: string, BLUE: string, YELLOW: string, PURPLE: string}}
  */
-var MARBLE_CLASS = {
+const MARBLE_CLASS = {
   CLEAR     : "marble",
   RED       : "marble red",
   GREEN     : "marble green",
@@ -26,7 +28,7 @@ var MARBLE_CLASS = {
  * @desc Array of marble colors
  * @type {MARBLE_CLASS[]}
  */
-var marbleClasses = [
+const marbleClasses = [
   MARBLE_CLASS.RED,
   MARBLE_CLASS.GREEN,
   MARBLE_CLASS.ORANGE,
@@ -36,33 +38,33 @@ var marbleClasses = [
   MARBLE_CLASS.PURPLE
 ];
 
-var nextThreeMarbleClasses = [];
+let nextThreeMarbleClasses = [];
 
-var table       = [];
-var tableMatrix = [];
+let table       = [];
+let tableMatrix = [];
 
-var tableWidth  = 9,
+let tableWidth  = 9,
     tableHeight = 9;
 
 /**
  * @desc initialization on page load
  */
-function init() {
+window.init = function init() {
   setThreeRandomMarbleClasses();
-  var tableElement = document.getElementsByTagName("table")[0];
+  let tableElement = document.getElementsByTagName("table")[0];
 
-  for (var i = 0; i < tableHeight; i++) {
-    var row = document.createElement("tr");
+  for (let i = 0; i < tableHeight; i++) {
+    let row = document.createElement("tr");
     tableElement.appendChild(row);
-    var tableRow = [];
-    for (var j = 0; j < tableWidth; j++) {
-      var cell       = document.createElement("td");
+    let tableRow = [];
+    for (let j = 0; j < tableWidth; j++) {
+      let cell       = document.createElement("td");
       //set coordinates
       cell.dataset.x = j;
       cell.dataset.y = i;
       cell.className = CELL_CLASS.CLEAR;
 
-      var marble       = document.createElement("div");
+      let marble       = document.createElement("div");
       marble.className = MARBLE_CLASS.CLEAR;
       marble.onclick   = click;
       cell.appendChild(marble);
@@ -80,7 +82,7 @@ function init() {
  */
 function setThreeRandomMarbleClasses() {
   nextThreeMarbleClasses = [marbleClasses[random(6)], marbleClasses[random(6)], marbleClasses[random(6)]];
-  for (var i in nextThreeMarbleClasses) {
+  for (let i in nextThreeMarbleClasses) {
     document.getElementById("next-" + i).className = "next-marble " + nextThreeMarbleClasses[i];
   }
 }
@@ -89,8 +91,8 @@ function setThreeRandomMarbleClasses() {
  * Prepares next three random marbles
  */
 function setThreeRandomMarbles() {
-  for (var marbleClass in nextThreeMarbleClasses) {
-    var m = getRandomClearMarble();
+  for (let marbleClass in nextThreeMarbleClasses) {
+    const m = getRandomClearMarble();
     if (m) m.className = nextThreeMarbleClasses[marbleClass];
   }
   setThreeRandomMarbleClasses()
@@ -110,11 +112,11 @@ function random(max) {
  * @returns {HTMLElement}
  */
 function getRandomClearMarble() {
-  var arrayOfCells = [];
+  let arrayOfCells = [];
   table.forEach(function (row) {
     arrayOfCells = arrayOfCells.concat(row);
   });
-  var clearCells = arrayOfCells.map(function (cell) {
+  let clearCells = arrayOfCells.map(function (cell) {
     return cell.children ? cell.children[0] : null;
   }).filter(function (marble) {
     return !!marble && marble.className === MARBLE_CLASS.CLEAR;
@@ -130,15 +132,15 @@ function getRandomClearMarble() {
  * Currently selected cell
  * @type {null}
  */
-var selected = null;
+let selected = null;
 
 /**
  * Reacts to use move and renders a new state
  * @param event {event}
  */
 function click(event) {
-  var marble = event.target;
-  var cell   = marble.parentNode;
+  let marble = event.target;
+  let cell   = marble.parentNode;
 
   if (!selected) {
     //first selection
@@ -149,10 +151,10 @@ function click(event) {
   } else {
     //selected one but
     if (isMarble(selected) && !isMarble(cell)) {
-      var startPoint = new Point(Number(selected.dataset.x), Number(selected.dataset.y));
-      var endPoint   = new Point(Number(cell.dataset.x), Number(cell.dataset.y));
-      // var finish        = pathFinder(selectedPoint, marble);
-      var isPathFund = findPath(startPoint, endPoint);
+      let startPoint = new Point(Number(selected.dataset.x), Number(selected.dataset.y));
+      let endPoint   = new Point(Number(cell.dataset.x), Number(cell.dataset.y));
+      // let finish        = pathFinder(selectedPoint, marble);
+      let isPathFund = findPath(startPoint, endPoint);
       if (isPathFund) {
         moveMarble(selected, cell);
         if (!clearFiveOrMore()) {
@@ -177,15 +179,15 @@ function click(event) {
  * @returns {Boolean} true if there is a path
  */
 function findPath(startPoint, endPoint) {
-  var grid = table.map(function (row) {
+  let grid = table.map(function (row) {
     return row.map(function (cell) {
       return cell.children[0].className === MARBLE_CLASS.CLEAR ? 1 : 0;
     });
   });
 
-  var graph = new Graph(grid);
-  var start = graph.grid[startPoint.y][startPoint.x];
-  var end   = graph.grid[endPoint.y][endPoint.x];
+  let graph = new Graph(grid);
+  let start = graph.grid[startPoint.y][startPoint.x];
+  let end   = graph.grid[endPoint.y][endPoint.x];
   return !!astar.search(graph, start, end).length;
 }
 
@@ -213,8 +215,8 @@ function deselect(element) {
  * @param finish {HTMLElement}
  */
 function moveMarble(start, finish) {
-  var startMarble       = start.children[0];
-  var finishMarble         = finish.children[0];
+  let startMarble       = start.children[0];
+  let finishMarble         = finish.children[0];
   finishMarble.className   = startMarble.className;
   startMarble.className = MARBLE_CLASS.CLEAR;
 }
@@ -225,7 +227,7 @@ function moveMarble(start, finish) {
  * @returns {boolean} true if it is a marble
  */
 function isMarble(element) {
-  var marble = element.children[0];
+  let marble = element.children[0];
   return marble.className !== MARBLE_CLASS.CLEAR;
 }
 
@@ -245,11 +247,11 @@ function Point(x, y) {
  * @returns {Boolean} true if any marble is destroyed
  */
 function clearFiveOrMore() {
-  var transponedTable         = transponeMatrix(table);
-  var diagonalizedTable       = diagonalizeMatrix(table);
-  var transponedDiagonalTable = diagonalizeMatrix(mirrorMatrix(table));
+  let transponedTable         = transponeMatrix(table);
+  let diagonalizedTable       = diagonalizeMatrix(table);
+  let transponedDiagonalTable = diagonalizeMatrix(mirrorMatrix(table));
 
-  var results = [];
+  let results = [];
   results     = results.concat(findFiveOrMoreInMatrix(table));
   results     = results.concat(findFiveOrMoreInMatrix(transponedTable));
   results     = results.concat(findFiveOrMoreInMatrix(diagonalizedTable));
@@ -268,21 +270,21 @@ function clearFiveOrMore() {
  * @returns {Array} Array of marbles that are destroyed
  */
 function findFiveOrMoreInMatrix(matrix) {
-  var results = [];
-  for (var row = 0; row < matrix.length; row++) {
-    var rowResults = [1];
-    for (var col = 1; col < matrix[row].length; col++) {
+  let results = [];
+  for (let row = 0; row < matrix.length; row++) {
+    let rowResults = [1];
+    for (let col = 1; col < matrix[row].length; col++) {
       if (matrix[row][col] && matrix[row][col - 1]) {
-        if (matrix[row][col].children[0].className === matrix[row][col - 1].children[0].className && matrix[row][col - 1].children[0].className != MARBLE_CLASS.CLEAR) {
+        if (matrix[row][col].children[0].className === matrix[row][col - 1].children[0].className && matrix[row][col - 1].children[0].className !== MARBLE_CLASS.CLEAR) {
           rowResults[col] = rowResults[col - 1] + 1;
         } else {
           rowResults[col] = 1;
         }
       }
     }
-    for (var i = rowResults.length - 1; i >= 0; i--) {
+    for (let i = rowResults.length - 1; i >= 0; i--) {
       if (rowResults[i] >= 5) {
-        for (var j = rowResults[i]; j >= 1; j--) {
+        for (let j = rowResults[i]; j >= 1; j--) {
           results.push(matrix[row][i]);
           i--;
         }
@@ -300,12 +302,12 @@ function findFiveOrMoreInMatrix(matrix) {
  * @returns {Array}
  */
 function transponeMatrix(matrix) {
-  var transponedTable = [];
+  let transponedTable = [];
   matrix[0].forEach(function (i, index) {
     transponedTable[index] = [];
   });
-  for (var indexRow = 0; indexRow < matrix.length; indexRow++) {
-    for (var indexCol = 0; indexCol < matrix[indexRow].length; indexCol++) {
+  for (let indexRow = 0; indexRow < matrix.length; indexRow++) {
+    for (let indexCol = 0; indexCol < matrix[indexRow].length; indexCol++) {
       transponedTable[indexCol][indexRow] = matrix[indexRow][indexCol];
     }
   }
@@ -321,10 +323,10 @@ function transponeMatrix(matrix) {
  * @returns {Array} new matrix nxm with mirrored values
  */
 function diagonalizeMatrix(matrix) {
-  var diagonalizedTable = [];
-  for (var j = 0; j < tableWidth + tableHeight - 1; j++) {
-    var row = [];
-    for (var i = j; i >= 0; i--) {
+  let diagonalizedTable = [];
+  for (let j = 0; j < tableWidth + tableHeight - 1; j++) {
+    let row = [];
+    for (let i = j; i >= 0; i--) {
       if (i < tableHeight && (j - i) < tableWidth) {
         row.push(matrix[i][j - i]);
       } else {
@@ -334,8 +336,8 @@ function diagonalizeMatrix(matrix) {
     diagonalizedTable.push(row);
   }
   //fix missing cells
-  for (var i = 0; i < tableWidth + tableHeight - 1; i++) {
-    for (var j = 0; j < tableWidth + tableHeight - 1; j++) {
+  for (let i = 0; i < tableWidth + tableHeight - 1; i++) {
+    for (let j = 0; j < tableWidth + tableHeight - 1; j++) {
       if (!diagonalizedTable[i][j]) diagonalizedTable[i][j] = null;
     }
   }
@@ -350,10 +352,10 @@ function diagonalizeMatrix(matrix) {
  * @returns {Array} new matrix nxm mirrored
  */
 function mirrorMatrix(matrix){
-  var mirroredMatrix = [];
+  let mirroredMatrix = [];
   matrix.forEach(function(row){
-    var mirroredRow = [];
-    for(var i = row.length-1;i>=0;i--){
+    let mirroredRow = [];
+    for(let i = row.length-1;i>=0;i--){
       mirroredRow.push(row[i]);
     }
     mirroredMatrix.push(mirroredRow);

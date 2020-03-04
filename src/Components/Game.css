@@ -1,38 +1,98 @@
-.App {
-  text-align: center;
+.table {
+  margin:auto;
+  width: 630px;
+  min-width: 630px;
+  height: 630px;
+  min-height: 630px;
+  border: 3px solid darkcyan;
+  background-color: honeydew;
+  border-collapse: collapse;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.next-marbles{
+  margin:auto;
+  text-align:center;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.cell {
+  width: 70px;
+  height: 70px;
+  border: 1px solid darkcyan;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.selected {
+  background-color: white;
+
 }
 
-.App-link {
-  color: #61dafb;
+.selected .marble {
+  box-shadow: 0 0 20px 10px yellow;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.marble {
+  border-radius: 50%;
+  width: 70px;
+  height: 70px;
+}
+
+.marble.red {
+  background-color: red;
+  border:1px solid darkred;
+  width: 68px;
+  height: 68px;
+}
+
+.marble.green {
+  background-color: forestgreen;
+  border:1px solid darkgreen;
+  width: 68px;
+  height: 68px;
+}
+
+.marble.orange {
+  background-color: orange;
+  border:1px solid orangered;
+  width: 68px;
+  height: 68px;
+}
+
+.marble.lightblue {
+  background-color: lightskyblue;
+  border:1px solid dodgerblue;
+  width: 68px;
+  height: 68px;
+}
+
+.marble.blue {
+  background-color: blue;
+  border:1px solid darkblue;
+  width: 68px;
+  height: 68px;
+}
+
+.marble.yellow {
+  background-color: yellow;
+  border:1px solid orange;
+  width: 68px;
+  height: 68px;
+}
+
+.marble.purple {
+  background-color: rebeccapurple;
+  border:1px solid gray;
+  width: 68px;
+  height: 68px;
+}
+
+.marble.checked {
+  background-color: white;
+}
+
+
+
+.next-marble.marble{
+  display: inline-block;
+  margin:5px;
+  width: 20px;
+  height: 20px;
 }
