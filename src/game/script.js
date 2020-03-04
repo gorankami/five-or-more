@@ -205,7 +205,7 @@ function Point(x, y) {
  * @desc finds solutions of five or more marbles of the same type in 4 directions vertical, horizontal, and both diagonal
  * @returns {Boolean} true if any marble is destroyed
  */
-function clearFiveOrMore(table) {
+export function clearFiveOrMore(table) {
   let transponedTable = transponeMatrix(table);
   let diagonalizedTable = diagonalizeMatrix(table);
   let transponedDiagonalTable = diagonalizeMatrix(mirrorMatrix(table));
@@ -217,7 +217,7 @@ function clearFiveOrMore(table) {
   results = results.concat(findFiveOrMoreInMatrix(transponedDiagonalTable));
 
   results.forEach(function (cell) {
-    cell.children[0].className = MARBLE_CLASS.CLEAR;
+    cell.marbleType = MARBLE_CLASS.CLEAR;
   });
 
   return !!results.length;
@@ -234,7 +234,7 @@ function findFiveOrMoreInMatrix(matrix) {
     let rowResults = [1];
     for (let col = 1; col < matrix[row].length; col++) {
       if (matrix[row][col] && matrix[row][col - 1]) {
-        if (matrix[row][col].children[0].className === matrix[row][col - 1].children[0].className && matrix[row][col - 1].children[0].className !== MARBLE_CLASS.CLEAR) {
+        if (matrix[row][col].marbleType === matrix[row][col - 1].marbleType && matrix[row][col - 1].marbleType !== MARBLE_CLASS.CLEAR) {
           rowResults[col] = rowResults[col - 1] + 1;
         } else {
           rowResults[col] = 1;

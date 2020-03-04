@@ -1,8 +1,7 @@
 import config from "../game.config.json"
-import { CELL_CLASS } from "./CELL_CLASS.js";
-import { MARBLE_CLASS } from "./MARBLE_CLASS.js";
-import { getThreeRandomMarbleClasses, getAnyClearMarble } from "./script";
-import { state } from "./state.js";
+import { MARBLE_CLASS } from "./MARBLE_CLASS";
+import { getThreeRandomMarbleClasses, getAnyClearMarble, clearFiveOrMore } from "./script";
+import { state } from "./state";
 
 let selected = undefined;
 
@@ -22,8 +21,7 @@ export const getSketch = sketch => {
         for (let i = 0; i < config.rows; i++) {
             let tableRow = [];
             for (let j = 0; j < config.columns; j++) {
-                const element = new TableCell(i, j, CELL_CLASS.CLEAR, MARBLE_CLASS.CLEAR)
-                // if (i === 5 && j === 5) element.marbleType = MARBLE_CLASS.LIGHT_BLUE;
+                const element = new TableCell(i, j, MARBLE_CLASS.CLEAR)
                 tableRow.push(element);
             }
             table.push(tableRow);
@@ -74,9 +72,7 @@ export const getSketch = sketch => {
                             e.marbleType = selected.marbleType;
                             selected.marbleType = MARBLE_CLASS.CLEAR;
                             selected = undefined;
-                            // if(winning combo){
-                            //     eliminate
-                            // } else 
+                            clearFiveOrMore(table)
                             next(table);
 
                         } else if (e.marbleType !== MARBLE_CLASS.CLEAR) {
@@ -95,10 +91,9 @@ export const getSketch = sketch => {
 
 
 class TableCell {
-    constructor(i, j, cellType, marbleType) {
+    constructor(i, j, marbleType) {
         this.i = i;
         this.j = j;
-        this.cellType = cellType;
         this.marbleType = marbleType;
     }
 
