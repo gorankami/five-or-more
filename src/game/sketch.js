@@ -72,8 +72,10 @@ export const getSketch = sketch => {
                             e.marbleType = selected.marbleType;
                             selected.marbleType = MARBLE_CLASS.CLEAR;
                             selected = undefined;
-                            clearFiveOrMore(table)
-                            next(table);
+                            if(!clearFiveOrMore(table)){
+                                next(table);
+                                clearFiveOrMore(table);
+                            }
 
                         } else if (e.marbleType !== MARBLE_CLASS.CLEAR) {
                             selected = e;

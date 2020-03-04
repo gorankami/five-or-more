@@ -210,11 +210,12 @@ export function clearFiveOrMore(table) {
   let diagonalizedTable = diagonalizeMatrix(table);
   let transponedDiagonalTable = diagonalizeMatrix(mirrorMatrix(table));
 
-  let results = [];
-  results = results.concat(findFiveOrMoreInMatrix(table));
-  results = results.concat(findFiveOrMoreInMatrix(transponedTable));
-  results = results.concat(findFiveOrMoreInMatrix(diagonalizedTable));
-  results = results.concat(findFiveOrMoreInMatrix(transponedDiagonalTable));
+  let results = [
+    ...findFiveOrMoreInMatrix(table),
+    ...findFiveOrMoreInMatrix(transponedTable),
+    ...findFiveOrMoreInMatrix(diagonalizedTable),
+    ...findFiveOrMoreInMatrix(transponedDiagonalTable)
+  ];
 
   results.forEach(function (cell) {
     cell.marbleType = MARBLE_CLASS.CLEAR;
