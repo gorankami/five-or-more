@@ -26,8 +26,7 @@ export const getSketch = sketch => {
             let tableRow = [];
             for (let j = 0; j < config.columns; j++) {
                 const element = new Element(i, j, CELL_CLASS.CLEAR, MARBLE_CLASS.CLEAR)
-
-                //marble.onclick = click(table);
+                if (i === 5 && j === 5) element.marbleType = MARBLE_CLASS.LIGHT_BLUE;
                 tableRow.push(element);
             }
             table.push(tableRow);
@@ -38,6 +37,38 @@ export const getSketch = sketch => {
         sketch.background(200);
         table.forEach(r => r.forEach(c => c.draw(sketch)))
     };
+
+
+
+    let selected = undefined;
+
+    sketch.touchStarted = () => {
+        const { mouseX, mouseY } = sketch;
+        for (let i = 0; i < table.length; i++) {
+            for (let j = 0; j < table.length; j++) {
+                const e = table[i][j];
+                if (e.x <= mouseX && mouseX < e.x + cellSize && e.y <= mouseY && mouseY < e.y + cellSize) {
+                    if (e.cellType === CELL_CLASS.SELECTED) {
+                        e.cellType = CELL_CLASS.CLEAR;
+                        selected = undefined;
+                    } else {
+                        if (e.marbleType === MARBLE_CLASS.CLEAR && selected) {
+                            //move selected marble
+                            e.marbleType = selected.marbleType;
+                            selected.marbleType = MARBLE_CLASS.CLEAR;
+                            selected = undefined;
+                        } else if (e.marbleType !== MARBLE_CLASS.CLEAR) {
+                            e.cellType = CELL_CLASS.SELECTED;
+                            selected = e;
+                        }
+                    }
+                } else {
+                    e.cellType = CELL_CLASS.CLEAR;
+                }
+            }
+        }
+        table.forEach(r => r.forEach(c => c.draw(sketch)))
+    }
 
 };
 
@@ -52,16 +83,38 @@ class Element {
 
     draw(sketch) {
         sketch.push();
-        const x = this.i * cellSize + tableMargin.left;
-        const y = this.j * cellSize + tableMargin.top;
+        this.x = this.i * cellSize + tableMargin.left;
+        this.y = this.j * cellSize + tableMargin.top;
         sketch.stroke(204, 102, 0);
         if (this.cellType === CELL_CLASS.SELECTED) {
             sketch.fill(204, 153, 0);
         }
-        sketch.rect(x, y, cellSize, cellSize);
+        sketch.rect(this.x, this.y, cellSize, cellSize);
+
+        if (this.marbleType !== MARBLE_CLASS.CLEAR) {
+            sketch.fill(getFillForMarbleType(this.marbleType));
+            sketch.circle(this.x + cellSize / 2, this.y + cellSize / 2, cellSize);
+        }
         sketch.pop();
     }
 }
 
-
+function getFillForMarbleType(type) {
+    switch (type) {
+        case MARBLE_CLASS.GREEN:
+            return "green";
+        case MARBLE_CLASS.LIGHT_BLUE:
+            return "lightblue";
+        case MARBLE_CLASS.RED:
+            return "red"
+        case MARBLE_CLASS.ORANGE:
+            return "orange"
+        case MARBLE_CLASS.BLUE:
+            return "blue"
+        case MARBLE_CLASS.YELLOW:
+            return "yellow"
+        case MARBLE_CLASS.PURPLE:
+            return "purple"
+    }
+}
 
