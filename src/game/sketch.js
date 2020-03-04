@@ -1,6 +1,7 @@
 import config from "../game.config.json"
+
 import { MARBLE_CLASS } from "./MARBLE_CLASS";
-import { getThreeRandomMarbleClasses, getAnyClearMarble, clearFiveOrMore } from "./script";
+import { getThreeRandomMarbleClasses, getAnyClearMarble, clearFiveOrMore, findPath, Point } from "./script";
 import { state } from "./state";
 
 let selected = undefined;
@@ -30,10 +31,10 @@ export const getSketch = sketch => {
         next(table);
     };
 
-    function next(table){
-        state.nextThree.forEach(marbleClass=>{
+    function next(table) {
+        state.nextThree.forEach(marbleClass => {
             const tableCell = getAnyClearMarble(table);
-            if(tableCell) tableCell.marbleType = marbleClass;
+            if (tableCell) tableCell.marbleType = marbleClass;
         });
 
         state.nextThree = getThreeRandomMarbleClasses();
@@ -69,14 +70,19 @@ export const getSketch = sketch => {
                     } else {
                         if (e.marbleType === MARBLE_CLASS.CLEAR && selected) {
                             //move selected marble
-                            e.marbleType = selected.marbleType;
-                            selected.marbleType = MARBLE_CLASS.CLEAR;
-                            selected = undefined;
-                            if(!clearFiveOrMore(table)){
-                                next(table);
-                                clearFiveOrMore(table);
-                            }
+                            let startPoint = new Point(Number(selected.i), Number(selected.j));
+                            let endPoint = new Point(Number(e.i), Number(e.j));
 
+                            let path = findPath(table, startPoint, endPoint);
+                            if (!!path) {
+                                e.marbleType = selected.marbleType;
+                                selected.marbleType = MARBLE_CLASS.CLEAR;
+                                selected = undefined;
+                                if (!clearFiveOrMore(table)) {
+                                    next(table);
+                                    clearFiveOrMore(table);
+                                }
+                            }
                         } else if (e.marbleType !== MARBLE_CLASS.CLEAR) {
                             selected = e;
                         }
@@ -135,6 +141,8 @@ function getFillForMarbleType(type) {
             return "yellow"
         case MARBLE_CLASS.PURPLE:
             return "purple"
+        default:
+            return ""
     }
 }
 
