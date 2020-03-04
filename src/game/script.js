@@ -1,29 +1,6 @@
 import {Graph, astar} from "javascript-astar"
-
-/**
- * @desc Enumerator for cell classes
- * @type {{CLEAR: string, SELECTED: string}}
- */
-const CELL_CLASS = {
-  CLEAR   : "cell",
-  SELECTED: "cell selected"
-};
-
-/**
- * @desc Enumerator for marble classes
- * @type {{CLEAR: string, RED: string, GREEN: string, ORANGE: string, LIGHT_BLUE: string, BLUE: string, YELLOW: string, PURPLE: string}}
- */
-const MARBLE_CLASS = {
-  CLEAR     : "marble",
-  RED       : "marble red",
-  GREEN     : "marble green",
-  ORANGE    : "marble orange",
-  LIGHT_BLUE: "marble lightblue",
-  BLUE      : "marble blue",
-  YELLOW    : "marble yellow",
-  PURPLE    : "marble purple"
-};
-
+import { CELL_CLASS } from './CELL_CLASS';
+import { MARBLE_CLASS } from './MARBLE_CLASS';
 /**
  * @desc Array of marble colors
  * @type {MARBLE_CLASS[]}
@@ -40,47 +17,14 @@ const marbleClasses = [
 
 let nextThreeMarbleClasses = [];
 
-let table       = [];
-let tableMatrix = [];
 
 let tableWidth  = 9,
     tableHeight = 9;
 
 /**
- * @desc initialization on page load
- */
-window.init = function init() {
-  setThreeRandomMarbleClasses();
-  let tableElement = document.getElementsByTagName("table")[0];
-
-  for (let i = 0; i < tableHeight; i++) {
-    let row = document.createElement("tr");
-    tableElement.appendChild(row);
-    let tableRow = [];
-    for (let j = 0; j < tableWidth; j++) {
-      let cell       = document.createElement("td");
-      //set coordinates
-      cell.dataset.x = j;
-      cell.dataset.y = i;
-      cell.className = CELL_CLASS.CLEAR;
-
-      let marble       = document.createElement("div");
-      marble.className = MARBLE_CLASS.CLEAR;
-      marble.onclick   = click;
-      cell.appendChild(marble);
-      row.appendChild(cell);
-      tableRow.push(cell);
-      tableMatrix.push(cell);
-    }
-    table.push(tableRow);
-  }
-  setThreeRandomMarbles();
-}
-
-/**
  * Sets next three random marbles
  */
-function setThreeRandomMarbleClasses() {
+export function setThreeRandomMarbleClasses() {
   nextThreeMarbleClasses = [marbleClasses[random(6)], marbleClasses[random(6)], marbleClasses[random(6)]];
   for (let i in nextThreeMarbleClasses) {
     document.getElementById("next-" + i).className = "next-marble " + nextThreeMarbleClasses[i];
@@ -90,9 +34,9 @@ function setThreeRandomMarbleClasses() {
 /**
  * Prepares next three random marbles
  */
-function setThreeRandomMarbles() {
+export function setThreeRandomMarbles(table) {
   for (let marbleClass in nextThreeMarbleClasses) {
-    const m = getRandomClearMarble();
+    const m = getRandomClearMarble(table);
     if (m) m.className = nextThreeMarbleClasses[marbleClass];
   }
   setThreeRandomMarbleClasses()
@@ -111,7 +55,7 @@ function random(max) {
  * Gets a random space that is not occupied with a marble
  * @returns {HTMLElement}
  */
-function getRandomClearMarble() {
+function getRandomClearMarble(table) {
   let arrayOfCells = [];
   table.forEach(function (row) {
     arrayOfCells = arrayOfCells.concat(row);
@@ -138,7 +82,7 @@ let selected = null;
  * Reacts to use move and renders a new state
  * @param event {event}
  */
-function click(event) {
+export const click = table => event => {
   let marble = event.target;
   let cell   = marble.parentNode;
 
@@ -154,13 +98,13 @@ function click(event) {
       let startPoint = new Point(Number(selected.dataset.x), Number(selected.dataset.y));
       let endPoint   = new Point(Number(cell.dataset.x), Number(cell.dataset.y));
       // let finish        = pathFinder(selectedPoint, marble);
-      let isPathFund = findPath(startPoint, endPoint);
+      let isPathFund = findPath(table, startPoint, endPoint);
       if (isPathFund) {
         moveMarble(selected, cell);
-        if (!clearFiveOrMore()) {
-          setThreeRandomMarbles();
+        if (!clearFiveOrMore(table)) {
+          setThreeRandomMarbles(table);
           //if random marbles complete a line by accident
-          clearFiveOrMore();
+          clearFiveOrMore(table);
         }
       }
       deselect(selected);
@@ -178,7 +122,7 @@ function click(event) {
  * @param endPoint {Point}
  * @returns {Boolean} true if there is a path
  */
-function findPath(startPoint, endPoint) {
+function findPath(table, startPoint, endPoint) {
   let grid = table.map(function (row) {
     return row.map(function (cell) {
       return cell.children[0].className === MARBLE_CLASS.CLEAR ? 1 : 0;
@@ -246,7 +190,7 @@ function Point(x, y) {
  * @desc finds solutions of five or more marbles of the same type in 4 directions vertical, horizontal, and both diagonal
  * @returns {Boolean} true if any marble is destroyed
  */
-function clearFiveOrMore() {
+function clearFiveOrMore(table) {
   let transponedTable         = transponeMatrix(table);
   let diagonalizedTable       = diagonalizeMatrix(table);
   let transponedDiagonalTable = diagonalizeMatrix(mirrorMatrix(table));

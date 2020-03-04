@@ -1,12 +1,45 @@
 import React, { Component } from 'react';
 import './Game.css';
 import "../game/script"
+import { setThreeRandomMarbleClasses, setThreeRandomMarbles, click } from '../game/script';
+import { CELL_CLASS } from '../game/CELL_CLASS';
+import { MARBLE_CLASS } from '../game/MARBLE_CLASS';
 
-class Game extends Component {
-  componentDidMount(){
-    window.init()
+
+let tableWidth = 9,
+  tableHeight = 9;
+let tableMatrix = [];
+let table       = [];
+
+export default class Game extends Component {
+  componentDidMount() {
+    setThreeRandomMarbleClasses();
+    let tableElement = document.getElementsByTagName("table")[0];
+
+    for (let i = 0; i < tableHeight; i++) {
+      let row = document.createElement("tr");
+      tableElement.appendChild(row);
+      let tableRow = [];
+      for (let j = 0; j < tableWidth; j++) {
+        let cell = document.createElement("td");
+        //set coordinates
+        cell.dataset.x = j;
+        cell.dataset.y = i;
+        cell.className = CELL_CLASS.CLEAR;
+
+        let marble = document.createElement("div");
+        marble.className = MARBLE_CLASS.CLEAR;
+        marble.onclick = click(table);
+        cell.appendChild(marble);
+        row.appendChild(cell);
+        tableRow.push(cell);
+        tableMatrix.push(cell);
+      }
+      table.push(tableRow);
+    }
+    setThreeRandomMarbles(table);
   }
-  render(){
+  render() {
     return (
       <div className="Game">
         <table className="table"></table>
@@ -21,4 +54,4 @@ class Game extends Component {
   }
 }
 
-export default Game;
+
