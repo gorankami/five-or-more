@@ -1,55 +1,72 @@
 import config from "../game.config.json"
 import { CELL_CLASS } from "./CELL_CLASS.js";
 import { MARBLE_CLASS } from "./MARBLE_CLASS.js";
+import { getThreeRandomMarbleClasses, getAnyClearMarble } from "./script";
+import { state } from "./state.js";
 
-let cellSize;
-const tableMargin = {
-    top: 10,
-    bottom: 100,
-    left: 10,
-    right: 10
-}
+let selected = undefined;
+
 export const getSketch = sketch => {
     const table = [];
-
+    const { left, right, top, bottom } = config.tableMargin
     sketch.setup = () => {
         sketch.createCanvas(600, 600);
-        let tableWidth = sketch.width - tableMargin.left - tableMargin.right
-        let tableHeight = sketch.height - tableMargin.top - tableMargin.bottom
+        state.tableWidth = sketch.width - left - right
+        state.tableHeight = sketch.height - top - bottom
 
-        if (tableWidth > tableHeight) {
-            cellSize = tableHeight / config.rows;
+        if (state.tableWidth > state.tableHeight) {
+            state.cellSize = state.tableHeight / config.rows;
         } else {
-            cellSize = tableWidth / config.columns;
+            state.cellSize = state.tableWidth / config.columns;
         }
         for (let i = 0; i < config.rows; i++) {
             let tableRow = [];
             for (let j = 0; j < config.columns; j++) {
-                const element = new Element(i, j, CELL_CLASS.CLEAR, MARBLE_CLASS.CLEAR)
-                if (i === 5 && j === 5) element.marbleType = MARBLE_CLASS.LIGHT_BLUE;
+                const element = new TableCell(i, j, CELL_CLASS.CLEAR, MARBLE_CLASS.CLEAR)
+                // if (i === 5 && j === 5) element.marbleType = MARBLE_CLASS.LIGHT_BLUE;
                 tableRow.push(element);
             }
             table.push(tableRow);
         }
+        state.nextThree = getThreeRandomMarbleClasses();
+        next(table);
     };
+
+    function next(table){
+        state.nextThree.forEach(marbleClass=>{
+            const tableCell = getAnyClearMarble(table);
+            if(tableCell) tableCell.marbleType = marbleClass;
+        });
+
+        state.nextThree = getThreeRandomMarbleClasses();
+    }
 
     sketch.draw = () => {
         sketch.background(200);
         table.forEach(r => r.forEach(c => c.draw(sketch)))
+
+
+        const circleY = state.tableHeight + config.tableMargin.top + 20
+        const circleW = state.cellSize / 2;
+        state.nextThree.forEach((marbleClass, i) => {
+            sketch.push()
+            sketch.fill(getFillForMarbleType(marbleClass))
+            sketch.circle(20 + i * (circleW + 20), circleY, circleW)
+            sketch.pop()
+        });
     };
 
 
 
-    let selected = undefined;
-
     sketch.touchStarted = () => {
         const { mouseX, mouseY } = sketch;
+        let found = false;
         for (let i = 0; i < table.length; i++) {
             for (let j = 0; j < table.length; j++) {
                 const e = table[i][j];
-                if (e.x <= mouseX && mouseX < e.x + cellSize && e.y <= mouseY && mouseY < e.y + cellSize) {
-                    if (e.cellType === CELL_CLASS.SELECTED) {
-                        e.cellType = CELL_CLASS.CLEAR;
+                if (e.x <= mouseX && mouseX < e.x + state.cellSize && e.y <= mouseY && mouseY < e.y + state.cellSize) {
+                    found = true;
+                    if (e === selected) {
                         selected = undefined;
                     } else {
                         if (e.marbleType === MARBLE_CLASS.CLEAR && selected) {
@@ -57,15 +74,19 @@ export const getSketch = sketch => {
                             e.marbleType = selected.marbleType;
                             selected.marbleType = MARBLE_CLASS.CLEAR;
                             selected = undefined;
+                            // if(winning combo){
+                            //     eliminate
+                            // } else 
+                            next(table);
+
                         } else if (e.marbleType !== MARBLE_CLASS.CLEAR) {
-                            e.cellType = CELL_CLASS.SELECTED;
                             selected = e;
                         }
                     }
-                } else {
-                    e.cellType = CELL_CLASS.CLEAR;
+                    break;
                 }
             }
+            if (found) break;
         }
         table.forEach(r => r.forEach(c => c.draw(sketch)))
     }
@@ -73,7 +94,7 @@ export const getSketch = sketch => {
 };
 
 
-class Element {
+class TableCell {
     constructor(i, j, cellType, marbleType) {
         this.i = i;
         this.j = j;
@@ -83,10 +104,12 @@ class Element {
 
     draw(sketch) {
         sketch.push();
+        const { tableMargin } = config;
+        const { cellSize } = state;
         this.x = this.i * cellSize + tableMargin.left;
         this.y = this.j * cellSize + tableMargin.top;
         sketch.stroke(204, 102, 0);
-        if (this.cellType === CELL_CLASS.SELECTED) {
+        if (this === selected) {
             sketch.fill(204, 153, 0);
         }
         sketch.rect(this.x, this.y, cellSize, cellSize);

@@ -1,4 +1,10 @@
 {
     "rows": 9,
-    "columns": 9
+    "columns": 9,
+    "tableMargin": {
+        "top": 10,
+        "bottom": 100,
+        "left": 10,
+        "right": 10
+    }
 }

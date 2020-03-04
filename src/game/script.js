@@ -72,6 +72,21 @@ function getRandomClearMarble(table) {
   }
 }
 
+export function getAnyClearMarble(table) {
+  let arrayOfCells = [];
+  table.forEach(function (row) {
+    arrayOfCells = arrayOfCells.concat(row);
+  });
+  let clearCells = arrayOfCells
+    .filter(marble => marble.marbleType === MARBLE_CLASS.CLEAR)
+  if (clearCells.length) {
+    return clearCells[random(clearCells.length - 1)];
+  } else {
+    return null;
+  }
+}
+
+
 /**
  * Currently selected cell
  * @type {null}
