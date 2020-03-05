@@ -5,14 +5,16 @@ import "../game/script"
 import { getSketch } from '../game/sketch';
 
 export default class Game extends Component {
+  constructor(props){
+    super(props);
+    this.placeholderRef = React.createRef();
+  }
   componentDidMount() {
-    new p5(getSketch, document.getElementById('p5sketch'));
+    new p5(getSketch, this.placeholderRef.current);
   }
   render() {
     return (
-      <div>
-
-      </div>
+      <div ref={this.placeholderRef}> </div>
     );
   }
 }

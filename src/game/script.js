@@ -1,6 +1,5 @@
 import { Graph, astar } from "javascript-astar"
 import config from "../game.config.json"
-import { CELL_CLASS } from './CELL_CLASS';
 import { MARBLE_CLASS } from './MARBLE_CLASS';
 /**
  * @desc Array of marble colors
@@ -87,51 +86,6 @@ export function getAnyClearMarble(table) {
   }
 }
 
-
-/**
- * Currently selected cell
- * @type {null}
- */
-let selected = null;
-
-/**
- * Reacts to use move and renders a new state
- * @param event {event}
- */
-export const click = table => event => {
-  let marble = event.target;
-  let cell = marble.parentNode;
-
-  if (!selected) {
-    //first selection
-    select(cell);
-  } else if (cell === selected) {
-    //selected same cell, just deselect
-    deselect(cell);
-  } else {
-    //selected one but
-    if (isMarble(selected) && !isMarble(cell)) {
-      let startPoint = new Point(Number(selected.dataset.x), Number(selected.dataset.y));
-      let endPoint = new Point(Number(cell.dataset.x), Number(cell.dataset.y));
-      // let finish        = pathFinder(selectedPoint, marble);
-      let isPathFund = findPath(table, startPoint, endPoint);
-      if (isPathFund) {
-        moveMarble(selected, cell);
-        if (!clearFiveOrMore(table)) {
-          setThreeRandomMarbles(table);
-          //if random marbles complete a line by accident
-          clearFiveOrMore(table);
-        }
-      }
-      deselect(selected);
-
-    } else {
-      deselect(selected);
-      select(cell);
-    }
-  }
-}
-
 /**
  * Uses A* path finding alghoritm to check if there is a path between startPoint and endPoint
  * @param startPoint {Point}
@@ -152,46 +106,6 @@ export function findPath(table, startPoint, endPoint) {
   let start = graph.grid[startPoint.y][startPoint.x];
   let end = graph.grid[endPoint.y][endPoint.x];
   return astar.search(graph, start, end).length;
-}
-
-/**
- * Marks table cell as selected
- * @param element {HTMLElement}
- */
-function select(element) {
-  selected = element;
-  element.className = CELL_CLASS.SELECTED;
-}
-
-/**
- * Clears DOM element from any marble class
- * @param element {HTMLElement}
- */
-function deselect(element) {
-  selected = null;
-  element.className = CELL_CLASS.CLEAR;
-}
-
-/**
- * Moves a marble from start to finish
- * @param start {HTMLElement}
- * @param finish {HTMLElement}
- */
-function moveMarble(start, finish) {
-  let startMarble = start.children[0];
-  let finishMarble = finish.children[0];
-  finishMarble.className = startMarble.className;
-  startMarble.className = MARBLE_CLASS.CLEAR;
-}
-
-/**
- * Short check if current marble position holds a marble
- * @param element {HTMLElement}
- * @returns {boolean} true if it is a marble
- */
-function isMarble(element) {
-  let marble = element.children[0];
-  return marble.className !== MARBLE_CLASS.CLEAR;
 }
 
 /**

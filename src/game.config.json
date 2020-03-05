@@ -6,5 +6,12 @@
         "bottom": 100,
         "left": 10,
         "right": 10
+    },
+    "gems": {
+        "white": "https://images.koji-cdn.com/a39f1dac-320f-4dc3-b7aa-55550da8bd7b/n4qrv-5f9d3216d1ed4b348aa330b7ea0ebe72.png",
+        "red": "https://images.koji-cdn.com/a39f1dac-320f-4dc3-b7aa-55550da8bd7b/6umh9-dc9389ca5a9449b5a2de95fb7edb7293.png",
+        "yellow": "https://images.koji-cdn.com/a39f1dac-320f-4dc3-b7aa-55550da8bd7b/pqh0u-79a9c14d268c483687a6e31b7b8d669e.png",
+        "green": "https://images.koji-cdn.com/a39f1dac-320f-4dc3-b7aa-55550da8bd7b/lwos0-49da8d97d35e49aea1d7e73f0b3b2038.png",
+        "blue": "https://images.koji-cdn.com/a39f1dac-320f-4dc3-b7aa-55550da8bd7b/74wp7-82e358a9c8c046ec8f6f87cd6860eed0.png"
     }
 }

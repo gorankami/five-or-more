@@ -1,14 +1,37 @@
 import config from "../game.config.json"
 
+import gemRed from "../images/Gems_01_64x64_015.png"
+import gemOrange from "../images/Gems_01_64x64_016.png"
+import gemYellow from "../images/Gems_01_64x64_017.png"
+import gemGreen from "../images/Gems_01_64x64_018.png"
+import gemBlue from "../images/Gems_01_64x64_019.png"
+import gemPurple from "../images/Gems_01_64x64_020.png"
+import gemWhite from "../images/Gems_01_64x64_021.png"
+
 import { MARBLE_CLASS } from "./MARBLE_CLASS";
 import { getThreeRandomMarbleClasses, getAnyClearMarble, clearFiveOrMore, findPath, Point } from "./script";
 import { state } from "./state";
 
+
+
 let selected = undefined;
+let images;
 
 export const getSketch = sketch => {
     const table = [];
     const { left, right, top, bottom } = config.tableMargin
+
+    sketch.preload = () => {
+        images = {
+            gemRed: sketch.loadImage(gemRed),
+            gemOrange: sketch.loadImage(gemOrange),
+            gemYellow: sketch.loadImage(gemYellow),
+            gemGreen: sketch.loadImage(gemGreen),
+            gemBlue: sketch.loadImage(gemBlue),
+            gemPurple: sketch.loadImage(gemPurple),
+            gemWhite: sketch.loadImage(gemWhite)
+        }
+    }
     sketch.setup = () => {
         sketch.createCanvas(600, 600);
         state.tableWidth = sketch.width - left - right
@@ -48,10 +71,10 @@ export const getSketch = sketch => {
         const circleY = state.tableHeight + config.tableMargin.top + 20
         const circleW = state.cellSize / 2;
         state.nextThree.forEach((marbleClass, i) => {
-            sketch.push()
-            sketch.fill(getFillForMarbleType(marbleClass))
-            sketch.circle(20 + i * (circleW + 20), circleY, circleW)
-            sketch.pop()
+            
+            sketch.image(getFillForMarbleType(marbleClass), 20 + i * (circleW + 20), circleY, circleW, circleW);
+            // sketch.fill(getFillForMarbleType(marbleClass))
+            // sketch.circle(20 + i * (circleW + 20), circleY, circleW)
         });
     };
 
@@ -118,8 +141,10 @@ class TableCell {
         sketch.rect(this.x, this.y, cellSize, cellSize);
 
         if (this.marbleType !== MARBLE_CLASS.CLEAR) {
-            sketch.fill(getFillForMarbleType(this.marbleType));
-            sketch.circle(this.x + cellSize / 2, this.y + cellSize / 2, cellSize);
+            
+            sketch.image(getFillForMarbleType(this.marbleType), this.x, this.y, cellSize, cellSize);
+            // sketch.fill(getFillForMarbleType(this.marbleType));
+            // sketch.circle(this.x + cellSize / 2, this.y + cellSize / 2, cellSize);
         }
         sketch.pop();
     }
@@ -128,19 +153,19 @@ class TableCell {
 function getFillForMarbleType(type) {
     switch (type) {
         case MARBLE_CLASS.GREEN:
-            return "green";
+            return images.gemGreen;
         case MARBLE_CLASS.LIGHT_BLUE:
-            return "lightblue";
+            return images.gemWhite;
         case MARBLE_CLASS.RED:
-            return "red"
+            return images.gemRed;
         case MARBLE_CLASS.ORANGE:
-            return "orange"
+            return images.gemOrange;
         case MARBLE_CLASS.BLUE:
-            return "blue"
+            return images.gemBlue;
         case MARBLE_CLASS.YELLOW:
-            return "yellow"
+            return images.gemYellow;
         case MARBLE_CLASS.PURPLE:
-            return "purple"
+            return images.gemPurple;
         default:
             return ""
     }
