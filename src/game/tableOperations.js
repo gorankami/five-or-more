@@ -1,90 +1,5 @@
 import { Graph, astar } from "javascript-astar"
 import config from "../game.config.json"
-import { MARBLE_CLASS } from './MARBLE_CLASS';
-/**
- * @desc Array of marble colors
- * @type {MARBLE_CLASS[]}
- */
-export const marbleClasses = [
-  MARBLE_CLASS.RED,
-  MARBLE_CLASS.GREEN,
-  MARBLE_CLASS.ORANGE,
-  MARBLE_CLASS.LIGHT_BLUE,
-  MARBLE_CLASS.BLUE,
-  MARBLE_CLASS.YELLOW,
-  MARBLE_CLASS.PURPLE
-];
-
-let tableWidth = 9,
-  tableHeight = 9;
-
-export function getThreeRandomMarbleClasses() {
-  return [marbleClasses[random(6)], marbleClasses[random(6)], marbleClasses[random(6)]];
-}
-
-/**
- * Sets next three random marbles
- */
-export function setThreeRandomMarbleClasses(nextThreeMarbleClasses) {
-  for (let i in nextThreeMarbleClasses) {
-    document.getElementById("next-" + i).className = "next-marble " + nextThreeMarbleClasses[i];
-  }
-}
-
-/**
- * Prepares next three random marbles
- */
-export function setThreeRandomMarbles(table, nextThreeMarbleClasses) {
-  for (let marbleClass in nextThreeMarbleClasses) {
-    const m = getRandomClearMarble(table);
-    if (m) m.className = nextThreeMarbleClasses[marbleClass];
-  }
-  setThreeRandomMarbleClasses()
-}
-
-/**
- * Random number from 0 to max
- * @param max {Integer}
- * @returns {Integer}
- */
-function random(max) {
-  return Math.floor(Math.random() * max);
-}
-
-/**
- * Gets a random space that is not occupied with a marble
- * @returns {HTMLElement}
- */
-function getRandomClearMarble(table) {
-  let arrayOfCells = [];
-  table.forEach(function (row) {
-    arrayOfCells = arrayOfCells.concat(row);
-  });
-  let clearCells = arrayOfCells.map(function (cell) {
-    return cell.children ? cell.children[0] : null;
-  }).filter(function (marble) {
-    return !!marble && marble.className === MARBLE_CLASS.CLEAR;
-  });
-  if (clearCells.length) {
-    return clearCells[random(clearCells.length - 1)];
-  } else {
-    return null;
-  }
-}
-
-export function getAnyClearMarble(table) {
-  let arrayOfCells = [];
-  table.forEach(function (row) {
-    arrayOfCells = arrayOfCells.concat(row);
-  });
-  let clearCells = arrayOfCells
-    .filter(marble => marble.marbleType === MARBLE_CLASS.CLEAR)
-  if (clearCells.length) {
-    return clearCells[random(clearCells.length - 1)];
-  } else {
-    return null;
-  }
-}
 
 /**
  * Uses A* path finding alghoritm to check if there is a path between startPoint and endPoint
@@ -98,7 +13,7 @@ export function findPath(table, startPoint, endPoint) {
   for (let i = 0; i < config.columns; i++) {
     grid[i] = [];
     for (let j = 0; j < config.rows; j++) {
-      grid[i][j] = table[j][i].marbleType === MARBLE_CLASS.CLEAR ? 1 : 0;
+      grid[i][j] = !table[j][i].img ? 1 : 0;
     }
   }
 
@@ -136,7 +51,7 @@ export function clearFiveOrMore(table) {
   ];
 
   results.forEach(function (cell) {
-    cell.marbleType = MARBLE_CLASS.CLEAR;
+    cell.img = undefined;
   });
 
   return !!results.length;
@@ -153,7 +68,7 @@ function findFiveOrMoreInMatrix(matrix) {
     let rowResults = [1];
     for (let col = 1; col < matrix[row].length; col++) {
       if (matrix[row][col] && matrix[row][col - 1]) {
-        if (matrix[row][col].marbleType === matrix[row][col - 1].marbleType && matrix[row][col - 1].marbleType !== MARBLE_CLASS.CLEAR) {
+        if (matrix[row][col].img === matrix[row][col - 1].img && !!matrix[row][col - 1].img) {
           rowResults[col] = rowResults[col - 1] + 1;
         } else {
           rowResults[col] = 1;
@@ -202,10 +117,10 @@ function transponeMatrix(matrix) {
  */
 function diagonalizeMatrix(matrix) {
   let diagonalizedTable = [];
-  for (let j = 0; j < tableWidth + tableHeight - 1; j++) {
+  for (let j = 0; j < config.columns + config.rows - 1; j++) {
     let row = [];
     for (let i = j; i >= 0; i--) {
-      if (i < tableHeight && (j - i) < tableWidth) {
+      if (i < config.rows && (j - i) < config.columns) {
         row.push(matrix[i][j - i]);
       } else {
         row.push(null);
@@ -214,8 +129,8 @@ function diagonalizeMatrix(matrix) {
     diagonalizedTable.push(row);
   }
   //fix missing cells
-  for (let i = 0; i < tableWidth + tableHeight - 1; i++) {
-    for (let j = 0; j < tableWidth + tableHeight - 1; j++) {
+  for (let i = 0; i < config.columns + config.rows - 1; i++) {
+    for (let j = 0; j < config.columns + config.rows - 1; j++) {
       if (!diagonalizedTable[i][j]) diagonalizedTable[i][j] = null;
     }
   }

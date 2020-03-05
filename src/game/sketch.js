@@ -8,29 +8,27 @@ import gemBlue from "../images/Gems_01_64x64_019.png"
 import gemPurple from "../images/Gems_01_64x64_020.png"
 import gemWhite from "../images/Gems_01_64x64_021.png"
 
-import { MARBLE_CLASS } from "./MARBLE_CLASS";
-import { getThreeRandomMarbleClasses, getAnyClearMarble, clearFiveOrMore, findPath, Point } from "./script";
+import { clearFiveOrMore, findPath, Point } from "./tableOperations";
 import { state } from "./state";
+import { TableCell } from "./TableCell.js"
 
-
-
-let selected = undefined;
-let images;
+state.selected = undefined;
+state.images = undefined;
 
 export const getSketch = sketch => {
     const table = [];
     const { left, right, top, bottom } = config.tableMargin
 
     sketch.preload = () => {
-        images = {
-            gemRed: sketch.loadImage(gemRed),
-            gemOrange: sketch.loadImage(gemOrange),
-            gemYellow: sketch.loadImage(gemYellow),
-            gemGreen: sketch.loadImage(gemGreen),
-            gemBlue: sketch.loadImage(gemBlue),
-            gemPurple: sketch.loadImage(gemPurple),
-            gemWhite: sketch.loadImage(gemWhite)
-        }
+        state.images = [
+            sketch.loadImage(gemRed),
+            sketch.loadImage(gemOrange),
+            sketch.loadImage(gemYellow),
+            sketch.loadImage(gemGreen),
+            sketch.loadImage(gemBlue),
+            sketch.loadImage(gemPurple),
+            sketch.loadImage(gemWhite)
+        ]
     }
     sketch.setup = () => {
         sketch.createCanvas(600, 600);
@@ -45,40 +43,26 @@ export const getSketch = sketch => {
         for (let i = 0; i < config.rows; i++) {
             let tableRow = [];
             for (let j = 0; j < config.columns; j++) {
-                const element = new TableCell(i, j, MARBLE_CLASS.CLEAR)
+                const element = new TableCell(i, j);
                 tableRow.push(element);
             }
             table.push(tableRow);
         }
-        state.nextThree = getThreeRandomMarbleClasses();
+        state.nextThree = getThreeRandomSprites();
         next(table);
     };
 
-    function next(table) {
-        state.nextThree.forEach(marbleClass => {
-            const tableCell = getAnyClearMarble(table);
-            if (tableCell) tableCell.marbleType = marbleClass;
-        });
-
-        state.nextThree = getThreeRandomMarbleClasses();
-    }
 
     sketch.draw = () => {
         sketch.background(200);
         table.forEach(r => r.forEach(c => c.draw(sketch)))
 
-
         const circleY = state.tableHeight + config.tableMargin.top + 20
         const circleW = state.cellSize / 2;
-        state.nextThree.forEach((marbleClass, i) => {
-            
-            sketch.image(getFillForMarbleType(marbleClass), 20 + i * (circleW + 20), circleY, circleW, circleW);
-            // sketch.fill(getFillForMarbleType(marbleClass))
-            // sketch.circle(20 + i * (circleW + 20), circleY, circleW)
+        state.nextThree.forEach((img, i) => {
+            sketch.image(img, 20 + i * (circleW + 20), circleY, circleW, circleW);
         });
     };
-
-
 
     sketch.touchStarted = () => {
         const { mouseX, mouseY } = sketch;
@@ -88,26 +72,26 @@ export const getSketch = sketch => {
                 const e = table[i][j];
                 if (e.x <= mouseX && mouseX < e.x + state.cellSize && e.y <= mouseY && mouseY < e.y + state.cellSize) {
                     found = true;
-                    if (e === selected) {
-                        selected = undefined;
+                    if (e === state.selected) {
+                        state.selected = undefined;
                     } else {
-                        if (e.marbleType === MARBLE_CLASS.CLEAR && selected) {
+                        if (e.img === undefined && state.selected) {
                             //move selected marble
-                            let startPoint = new Point(Number(selected.i), Number(selected.j));
+                            let startPoint = new Point(Number(state.selected.i), Number(state.selected.j));
                             let endPoint = new Point(Number(e.i), Number(e.j));
 
                             let path = findPath(table, startPoint, endPoint);
                             if (!!path) {
-                                e.marbleType = selected.marbleType;
-                                selected.marbleType = MARBLE_CLASS.CLEAR;
-                                selected = undefined;
+                                e.img = state.selected.img;
+                                state.selected.img = undefined
+                                state.selected = undefined;
                                 if (!clearFiveOrMore(table)) {
                                     next(table);
                                     clearFiveOrMore(table);
                                 }
                             }
-                        } else if (e.marbleType !== MARBLE_CLASS.CLEAR) {
-                            selected = e;
+                        } else if (e.img) {
+                            state.selected = e;
                         }
                     }
                     break;
@@ -120,54 +104,39 @@ export const getSketch = sketch => {
 
 };
 
+function next(table) {
+    state.nextThree.forEach(img => {
+        const tableCell = getAnyClearMarble(table);
+        if (tableCell) tableCell.img = img;
+    });
 
-class TableCell {
-    constructor(i, j, marbleType) {
-        this.i = i;
-        this.j = j;
-        this.marbleType = marbleType;
-    }
-
-    draw(sketch) {
-        sketch.push();
-        const { tableMargin } = config;
-        const { cellSize } = state;
-        this.x = this.i * cellSize + tableMargin.left;
-        this.y = this.j * cellSize + tableMargin.top;
-        sketch.stroke(204, 102, 0);
-        if (this === selected) {
-            sketch.fill(204, 153, 0);
-        }
-        sketch.rect(this.x, this.y, cellSize, cellSize);
-
-        if (this.marbleType !== MARBLE_CLASS.CLEAR) {
-            
-            sketch.image(getFillForMarbleType(this.marbleType), this.x, this.y, cellSize, cellSize);
-            // sketch.fill(getFillForMarbleType(this.marbleType));
-            // sketch.circle(this.x + cellSize / 2, this.y + cellSize / 2, cellSize);
-        }
-        sketch.pop();
-    }
+    state.nextThree = getThreeRandomSprites();
 }
 
-function getFillForMarbleType(type) {
-    switch (type) {
-        case MARBLE_CLASS.GREEN:
-            return images.gemGreen;
-        case MARBLE_CLASS.LIGHT_BLUE:
-            return images.gemWhite;
-        case MARBLE_CLASS.RED:
-            return images.gemRed;
-        case MARBLE_CLASS.ORANGE:
-            return images.gemOrange;
-        case MARBLE_CLASS.BLUE:
-            return images.gemBlue;
-        case MARBLE_CLASS.YELLOW:
-            return images.gemYellow;
-        case MARBLE_CLASS.PURPLE:
-            return images.gemPurple;
-        default:
-            return ""
-    }
+
+function getThreeRandomSprites() {
+    return [state.images[random(6)], state.images[random(6)], state.images[random(6)]];
 }
 
+/**
+ * Random number from 0 to max
+ * @param max {Integer}
+ * @returns {Integer}
+ */
+function random(max) {
+    return Math.floor(Math.random() * max);
+}
+
+function getAnyClearMarble(table) {
+    let arrayOfCells = [];
+    table.forEach(function (row) {
+        arrayOfCells = arrayOfCells.concat(row);
+    });
+    let clearCells = arrayOfCells
+        .filter(marble => !marble.img)
+    if (clearCells.length) {
+        return clearCells[random(clearCells.length - 1)];
+    } else {
+        return null;
+    }
+}

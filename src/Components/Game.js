@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import p5 from 'p5';
 import './Game.css';
-import "../game/script"
+import "../game/tableOperations"
 import { getSketch } from '../game/sketch';
 
 export default class Game extends Component {
