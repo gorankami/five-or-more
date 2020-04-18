@@ -20,7 +20,7 @@ export function findPath(table, startPoint, endPoint) {
   let graph = new Graph(grid);
   let start = graph.grid[startPoint.y][startPoint.x];
   let end = graph.grid[endPoint.y][endPoint.x];
-  return astar.search(graph, start, end).length;
+  return astar.search(graph, start, end);
 }
 
 /**

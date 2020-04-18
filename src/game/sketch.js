@@ -11,6 +11,7 @@ import gemWhite from "../images/Gems_01_64x64_021.png"
 import { clearFiveOrMore, findPath, Point } from "./tableOperations";
 import { state } from "./state";
 import { TableCell } from "./TableCell.js"
+import { MovingMarble } from "./MovingMarble"
 
 state.selected = undefined;
 state.images = undefined;
@@ -18,7 +19,7 @@ state.images = undefined;
 export const getSketch = sketch => {
     const table = [];
     const { left, right, top, bottom } = config.tableMargin
-
+    let isUserInputAllowed = true;
     sketch.preload = () => {
         state.images = [
             sketch.loadImage(gemRed),
@@ -34,12 +35,21 @@ export const getSketch = sketch => {
         sketch.createCanvas(600, 600);
         state.tableWidth = sketch.width - left - right
         state.tableHeight = sketch.height - top - bottom
-
         if (state.tableWidth > state.tableHeight) {
             state.cellSize = state.tableHeight / config.rows;
         } else {
             state.cellSize = state.tableWidth / config.columns;
         }
+        setupTable();
+        state.nextThree = getThreeRandomSprites();
+        next(table);
+
+
+    };
+
+    let movingMarble;
+
+    function setupTable() {
         for (let i = 0; i < config.rows; i++) {
             let tableRow = [];
             for (let j = 0; j < config.columns; j++) {
@@ -48,9 +58,8 @@ export const getSketch = sketch => {
             }
             table.push(tableRow);
         }
-        state.nextThree = getThreeRandomSprites();
-        next(table);
-    };
+    }
+
 
 
     sketch.draw = () => {
@@ -62,9 +71,27 @@ export const getSketch = sketch => {
         state.nextThree.forEach((img, i) => {
             sketch.image(img, 20 + i * (circleW + 20), circleY, circleW, circleW);
         });
+
+        if (movingMarble) {
+            if (movingMarble.isForDeletion) {
+                movingMarble.e.img = movingMarble.img;
+                movingMarble = undefined;
+                isUserInputAllowed = true;
+                if (!clearFiveOrMore(table)) {
+                    next(table);
+                    clearFiveOrMore(table);
+                }
+            } else {
+                movingMarble.draw(sketch);
+                movingMarble.update(sketch);
+            }
+
+        }
     };
 
+    
     sketch.touchStarted = () => {
+        if(!isUserInputAllowed) return;
         const { mouseX, mouseY } = sketch;
         let found = false;
         for (let i = 0; i < table.length; i++) {
@@ -77,18 +104,17 @@ export const getSketch = sketch => {
                     } else {
                         if (e.img === undefined && state.selected) {
                             //move selected marble
+                            isUserInputAllowed = false;
                             let startPoint = new Point(Number(state.selected.i), Number(state.selected.j));
                             let endPoint = new Point(Number(e.i), Number(e.j));
 
                             let path = findPath(table, startPoint, endPoint);
-                            if (!!path) {
-                                e.img = state.selected.img;
+                            if (path && path.length) {
+                                movingMarble = new MovingMarble( state.selected.i, state.selected.j,state.selected.img, e)
+                                movingMarble.startAnimation(path.map(({ x, y }) => ({ i: y, j: x })))
+
                                 state.selected.img = undefined
                                 state.selected = undefined;
-                                if (!clearFiveOrMore(table)) {
-                                    next(table);
-                                    clearFiveOrMore(table);
-                                }
                             }
                         } else if (e.img) {
                             state.selected = e;

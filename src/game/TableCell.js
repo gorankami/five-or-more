@@ -1,4 +1,5 @@
-import config from "../game.config.json"
+import getXY from "./getXY";
+
 import { state } from "./state";
 
 export class TableCell {
@@ -6,14 +7,9 @@ export class TableCell {
         this.i = i;
         this.j = j;
         this.img = img;
-        this.setupXY();
-    }
-
-    setupXY() {
-        const { tableMargin } = config;
-        const { cellSize } = state;
-        this.x = this.i * cellSize + tableMargin.left;
-        this.y = this.j * cellSize + tableMargin.top;
+        const { x, y } = getXY(i, j)
+        this.x = x;
+        this.y = y;
     }
 
     draw(sketch) {
