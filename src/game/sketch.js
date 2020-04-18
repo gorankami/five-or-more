@@ -12,6 +12,7 @@ import { clearFiveOrMore, findPath, Point } from "./tableOperations";
 import { state } from "./state";
 import { TableCell } from "./TableCell.js"
 import { MovingMarble } from "./MovingMarble"
+import { ParticleMarble } from "./ParticleMarble"
 
 state.selected = undefined;
 state.images = undefined;
@@ -43,8 +44,6 @@ export const getSketch = sketch => {
         setupTable();
         state.nextThree = getThreeRandomSprites();
         next(table);
-
-
     };
 
     let movingMarble;
@@ -61,10 +60,20 @@ export const getSketch = sketch => {
     }
 
 
+    const particles = [];
+
 
     sketch.draw = () => {
         sketch.background(200);
         table.forEach(r => r.forEach(c => c.draw(sketch)))
+
+        particles.forEach(p => {
+            p.draw(sketch)
+            p.update(sketch)
+        })
+        for (let i = particles.length - 1; i >= 0; i--) {
+            if (particles[i].timer < 0) particles.splice(i, 1)
+        }
 
         const circleY = state.tableHeight + config.tableMargin.top + 20
         const circleW = state.cellSize / 2;
@@ -77,9 +86,21 @@ export const getSketch = sketch => {
                 movingMarble.e.img = movingMarble.img;
                 movingMarble = undefined;
                 isUserInputAllowed = true;
-                if (!clearFiveOrMore(table)) {
+                let clearArray = clearFiveOrMore(table)
+                if (!clearArray.length) {
                     next(table);
-                    clearFiveOrMore(table);
+                    clearArray = clearFiveOrMore(table)
+                }
+                if (clearArray.length) {
+                    clearArray.forEach(m => {
+                        let numParticles = 20
+                        while (numParticles > 0) {
+                            numParticles--;
+                            particles.push(new ParticleMarble(m.i, m.j, m.img, sketch))
+                        }
+
+                        m.img = undefined;
+                    })
                 }
             } else {
                 movingMarble.draw(sketch);
@@ -89,9 +110,9 @@ export const getSketch = sketch => {
         }
     };
 
-    
+
     sketch.touchStarted = () => {
-        if(!isUserInputAllowed) return;
+        if (!isUserInputAllowed) return;
         const { mouseX, mouseY } = sketch;
         let found = false;
         for (let i = 0; i < table.length; i++) {
@@ -110,7 +131,7 @@ export const getSketch = sketch => {
 
                             let path = findPath(table, startPoint, endPoint);
                             if (path && path.length) {
-                                movingMarble = new MovingMarble( state.selected.i, state.selected.j,state.selected.img, e)
+                                movingMarble = new MovingMarble(state.selected.i, state.selected.j, state.selected.img, e)
                                 movingMarble.startAnimation(path.map(({ x, y }) => ({ i: y, j: x })))
 
                                 state.selected.img = undefined

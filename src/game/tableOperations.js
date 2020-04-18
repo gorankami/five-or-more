@@ -50,11 +50,8 @@ export function clearFiveOrMore(table) {
     ...findFiveOrMoreInMatrix(transponedDiagonalTable)
   ];
 
-  results.forEach(function (cell) {
-    cell.img = undefined;
-  });
 
-  return !!results.length;
+  return results;
 }
 
 /**
