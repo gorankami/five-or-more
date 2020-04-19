@@ -1,4 +1,4 @@
-import { findPath, Point } from "../tableOperations";
+import { findPath } from "../tableOperations";
 import { state } from "../state";
 import { MovingMarble } from "../entities/MovingMarble";
 
@@ -17,8 +17,8 @@ export function touchStarted() {
                     if (e.img === undefined && state.selected) {
                         //move selected marble
                         state.isUserInputAllowed = false;
-                        let startPoint = new Point(Number(state.selected.i), Number(state.selected.j));
-                        let endPoint = new Point(Number(e.i), Number(e.j));
+                        let startPoint = this.createVector(Number(state.selected.i), Number(state.selected.j));
+                        let endPoint = this.createVector(Number(e.i), Number(e.j));
 
                         let path = findPath(state.table, startPoint, endPoint);
                         if (path && path.length) {
