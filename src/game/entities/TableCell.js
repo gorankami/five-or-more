@@ -1,6 +1,6 @@
-import getXY from "./getXY";
+import getXY from "../getXY";
 
-import { state } from "./state";
+import { state } from "../state";
 
 export class TableCell {
     constructor(i, j, img) {

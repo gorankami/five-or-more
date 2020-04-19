@@ -1,6 +1,6 @@
 
-import getXY from "./getXY";
-import { state } from "./state";
+import getXY from "../getXY";
+import { state } from "../state";
 
 export class MovingMarble {
     constructor(i, j, img, e) {

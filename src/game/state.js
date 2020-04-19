@@ -1,3 +1,9 @@
 export const state = {
-    nextThree: []
+    nextThree: [],
+    isUserInputAllowed: true,
+    table: [],
+    movingMarble: undefined,
+    particles: [],
+    selected: undefined,
+    images: []
 }

@@ -1,5 +1,5 @@
-import getXY from "./getXY";
-import { state } from "./state";
+import getXY from "../getXY";
+import { state } from "../state";
 
 export class ParticleMarble {
     constructor(i, j, img, sketch) {
@@ -8,14 +8,13 @@ export class ParticleMarble {
         this.position = sketch.createVector(x + state.cellSize/2, y + state.cellSize/2);
         this.timer = 1;
         this.size = state.cellSize;
-        this.velocity = sketch.createVector(sketch.random(-10, 10), sketch.random(-10, 10));
+        this.velocity = sketch.createVector(sketch.random(-20, 20), sketch.random(-20, 20));
     }
 
     update(sketch) {
-        
         if (sketch.frameRate()) {
             this.timer -= 1 / sketch.frameRate()
-            if(this.size > 1) this.size -= this.timer*4
+            if(this.size > 1) this.size -= this.timer*10
         }
         this.position.add(this.velocity)
     }
