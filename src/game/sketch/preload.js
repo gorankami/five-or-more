@@ -7,15 +7,19 @@ import gemGreen from "../../images/Gems_01_64x64_018.png"
 import gemBlue from "../../images/Gems_01_64x64_019.png"
 import gemPurple from "../../images/Gems_01_64x64_020.png"
 import gemWhite from "../../images/Gems_01_64x64_021.png"
+import bg from "../../images/bg.png";
 
 export function preload() {
+    const { sketch } = state;
+
     state.images = [
-        this.loadImage(gemRed),
-        this.loadImage(gemOrange),
-        this.loadImage(gemYellow),
-        this.loadImage(gemGreen),
-        this.loadImage(gemBlue),
-        this.loadImage(gemPurple),
-        this.loadImage(gemWhite)
+        sketch.loadImage(gemRed),
+        sketch.loadImage(gemOrange),
+        sketch.loadImage(gemYellow),
+        sketch.loadImage(gemGreen),
+        sketch.loadImage(gemBlue),
+        sketch.loadImage(gemPurple),
+        sketch.loadImage(gemWhite)
     ]
+    state.bg = sketch.loadImage(bg)
 }

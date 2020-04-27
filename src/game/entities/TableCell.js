@@ -15,9 +15,11 @@ export class TableCell {
     draw(sketch) {
         const { cellSize } = state;
         sketch.push();
-        sketch.stroke(204, 102, 0);
+        sketch.stroke('rgba(204, 102, 0,0.2)');
         if (this === state.selected) {
-            sketch.fill(204, 153, 0);
+            sketch.fill('rgba(204, 153, 0, 0.6)');
+        } else {
+            sketch.fill('rgba(255, 255, 255, 0.4)');
         }
         sketch.rect(this.x, this.y, cellSize, cellSize);
 

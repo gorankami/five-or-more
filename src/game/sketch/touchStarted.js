@@ -3,8 +3,9 @@ import { state } from "../state";
 import { MovingMarble } from "../entities/MovingMarble";
 
 export function touchStarted() {
+    const { sketch } = state;
     if (!state.isUserInputAllowed) return;
-    const { mouseX, mouseY } = this;
+    const { mouseX, mouseY } = sketch;
     let found = false;
     for (let i = 0; i < state.table.length; i++) {
         for (let j = 0; j < state.table.length; j++) {
@@ -17,8 +18,8 @@ export function touchStarted() {
                     if (e.img === undefined && state.selected) {
                         //move selected marble
                         state.isUserInputAllowed = false;
-                        let startPoint = this.createVector(Number(state.selected.i), Number(state.selected.j));
-                        let endPoint = this.createVector(Number(e.i), Number(e.j));
+                        let startPoint = sketch.createVector(Number(state.selected.i), Number(state.selected.j));
+                        let endPoint = sketch.createVector(Number(e.i), Number(e.j));
 
                         let path = findPath(state.table, startPoint, endPoint);
                         if (path && path.length) {
@@ -37,5 +38,5 @@ export function touchStarted() {
         }
         if (found) break;
     }
-    state.table.forEach(r => r.forEach(c => c.draw(this)))
+    state.table.forEach(r => r.forEach(c => c.draw(sketch)))
 }

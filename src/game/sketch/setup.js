@@ -6,10 +6,12 @@ import { getThreeRandomSprites } from "../getThreeRandomSprites";
 import { TableCell } from "../entities/TableCell";
 
 export function setup() {
+    
+    const { sketch } = state;
     const { left, right, top, bottom } = config.tableMargin
-    this.createCanvas(600, 600);
-    state.tableWidth = this.width - left - right
-    state.tableHeight = this.height - top - bottom
+    sketch.createCanvas(window.innerWidth, window.innerHeight);
+    state.tableWidth = sketch.width - left - right
+    state.tableHeight = sketch.height - top - bottom
     if (state.tableWidth > state.tableHeight) {
         state.cellSize = state.tableHeight / config.rows;
     } else {

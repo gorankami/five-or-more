@@ -2,10 +2,16 @@ import { preload } from "./preload"
 import { setup } from "./setup";
 import { draw } from "./draw";
 import { touchStarted } from "./touchStarted";
+import { state } from "../state";
+import { windowResized } from "./windowResized";
+
 
 export const getSketch = sketch => {
-    sketch.preload = preload.bind(sketch);
-    sketch.setup = setup.bind(sketch);
-    sketch.draw = draw.bind(sketch)
-    sketch.mousePressed = touchStarted.bind(sketch)
+    state.sketch = sketch;
+
+    sketch.preload = preload;
+    sketch.setup = setup;
+    sketch.draw = draw
+    sketch.mousePressed = touchStarted
+    sketch.windowResized = windowResized
 };

@@ -6,19 +6,19 @@ import { ParticleMarble } from "../entities/ParticleMarble";
 import { Points } from "../entities/Points";
 
 export function draw() {
-    this.background(200);
+    const { sketch } = state;
+    sketch.background(state.bg || 200);
+    state.table.forEach(r => r.forEach(c => c.draw(sketch)))
 
-
-    state.table.forEach(r => r.forEach(c => c.draw(this)))
 
     state.particles.forEach(p => {
-        p.draw(this)
-        p.update(this)
+        p.draw(sketch)
+        p.update(sketch)
     })
 
     state.points.forEach(p => {
-        p.draw(this)
-        p.update(this)
+        p.draw(sketch)
+        p.update(sketch)
     })
 
     for (let i = state.particles.length - 1; i >= 0; i--) {
@@ -31,7 +31,7 @@ export function draw() {
     const circleY = state.tableHeight + config.tableMargin.top + 20
     const circleW = state.cellSize / 2;
     state.nextThree.forEach((img, i) => {
-        this.image(img, 20 + i * (circleW + 20), circleY, circleW, circleW);
+        sketch.image(img, 20 + i * (circleW + 20), circleY, circleW, circleW);
     });
 
     if (state.movingMarble) {
@@ -49,16 +49,16 @@ export function draw() {
                     let numParticles = 10
                     while (numParticles > 0) {
                         numParticles--;
-                        state.particles.push(new ParticleMarble(m.i, m.j, m.img, this))
+                        state.particles.push(new ParticleMarble(m.i, m.j, m.img, sketch))
                     }
-                    state.points.push(new Points(m.i, m.j, "10", this))
-                    
+                    state.points.push(new Points(m.i, m.j, "10", sketch))
+
                     m.img = undefined;
                 })
             }
         } else {
-            state.movingMarble.draw(this);
-            state.movingMarble.update(this);
+            state.movingMarble.draw(sketch);
+            state.movingMarble.update(sketch);
         }
 
     }

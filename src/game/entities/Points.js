@@ -1,6 +1,7 @@
 import getXY from "../getXY";
 import { state } from "../state";
 import { easeOutQuint, easeOutSine, easeInExpo } from "js-easing-functions";
+import { Vector } from "p5";
 
 export class Points {
     constructor(i, j, txt, sketch) {
@@ -10,13 +11,13 @@ export class Points {
         this.maxSize = state.cellSize * 0.75;
         this.alpha = 1
         this.txt = txt;
-        this.position = sketch.createVector(x, y);
+        this.position = new Vector(x, y);
         this.initialPosition = sketch.createVector(x, y);
         this.timer = 1;
         this.sizeMod = 1;
         this.defaultSizeMod = sketch.random(1, 1.2);
         this.velocity = sketch.createVector(sketch.random(-10, 10), sketch.random(-10, 10));
-        this.animationDuration = 500;
+        this.animationDuration = 2500;
         this.defaultRotSpeed = sketch.random(-0.4, 0.4);
         this.rotation = sketch.random() * Math.PI * 2;
     }
