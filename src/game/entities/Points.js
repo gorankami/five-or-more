@@ -1,6 +1,6 @@
 import getXY from "../getXY";
 import { state } from "../state";
-import { easeOutQuad, easeOutQuint, easeOutSine, easeInElastic, easeInExpo } from "js-easing-functions";
+import { easeOutQuint, easeOutSine, easeInExpo } from "js-easing-functions";
 
 export class Points {
     constructor(i, j, txt, sketch) {
