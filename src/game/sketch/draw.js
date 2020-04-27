@@ -13,7 +13,7 @@ export function draw() {
         p.update(this)
     })
     for (let i = state.particles.length - 1; i >= 0; i--) {
-        if (state.particles[i].timer < 0) state.particles.splice(i, 1)
+        if (state.particles[i].canBeDestroyed) state.particles.splice(i, 1)
     }
 
     const circleY = state.tableHeight + config.tableMargin.top + 20
@@ -34,7 +34,7 @@ export function draw() {
             }
             if (clearArray.length) {
                 clearArray.forEach(m => {
-                    let numParticles = 20
+                    let numParticles = 10
                     while (numParticles > 0) {
                         numParticles--;
                         state.particles.push(new ParticleMarble(m.i, m.j, m.img, this))

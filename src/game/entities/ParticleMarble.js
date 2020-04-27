@@ -1,29 +1,42 @@
 import getXY from "../getXY";
 import { state } from "../state";
+import { easeOutQuad, easeOutQuint } from "js-easing-functions";
 
 export class ParticleMarble {
     constructor(i, j, img, sketch) {
         const { x, y } = getXY(i, j)
-        this.img = img;
-        this.position = sketch.createVector(x + state.cellSize/2, y + state.cellSize/2);
-        this.timer = 1;
         this.size = state.cellSize;
-        this.velocity = sketch.createVector(sketch.random(-20, 20), sketch.random(-20, 20));
+        this.img = img;
+        this.position = sketch.createVector(x + this.size / 2, y + this.size / 2);
+        this.initialPosition = sketch.createVector(x, y);
+        this.timer = 1;
+        this.sizeMod = 1;
+        this.defaultSizeMod = sketch.random(1, 1.2);
+        this.velocity = sketch.createVector(sketch.random(-10, 10), sketch.random(-10, 10));
+        this.animationDuration = 500;
+        this.defaultRotSpeed = sketch.random(-0.4, 0.4);
+        this.rotation = sketch.random() * Math.PI * 2;
     }
 
     update(sketch) {
-        if (sketch.frameRate()) {
-            this.timer -= 1 / sketch.frameRate()
-            if(this.size > 1) this.size -= this.timer*10
-        }
-        this.position.add(this.velocity)
+        if (!this.startTime) this.startTime = Date.now();
+        const elapsed = Date.now() - this.startTime;
+        if (elapsed > this.animationDuration) this.canBeDestroyed = true;
+        const velocityX = easeOutQuad(elapsed, this.velocity.x, -this.velocity.x, this.animationDuration)
+        const velocityY = easeOutQuad(elapsed, this.velocity.y, -this.velocity.y, this.animationDuration)
+
+        this.sizeMod = easeOutQuint(elapsed, this.defaultSizeMod, -this.defaultSizeMod * 0.99, this.animationDuration)
+        this.position.add(sketch.createVector(velocityX, velocityY));
+        this.rotSpeed = easeOutQuint(elapsed, this.defaultRotSpeed, -this.defaultRotSpeed, this.animationDuration);
+        this.rotation += this.rotSpeed;
     }
 
     draw(sketch) {
-        const sizeH = this.size / 2
+        const size = this.size * this.sizeMod;
         sketch.push()
         sketch.translate(this.position.x, this.position.y)
-        sketch.image(this.img, -sizeH, -sizeH, this.size, this.size);
+        sketch.rotate(this.rotation);
+        sketch.image(this.img, -size / 2, -size / 2, size, size);
         sketch.pop()
     }
 }
