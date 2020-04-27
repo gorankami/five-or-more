@@ -5,5 +5,6 @@ export const state = {
     movingMarble: undefined,
     particles: [],
     selected: undefined,
-    images: []
+    images: [],
+    points: []
 }
