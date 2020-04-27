@@ -17,7 +17,7 @@ export class Points {
         this.sizeMod = 1;
         this.defaultSizeMod = sketch.random(1, 1.2);
         this.velocity = sketch.createVector(sketch.random(-10, 10), sketch.random(-10, 10));
-        this.animationDuration = 2500;
+        this.animationDuration = 1000;
         this.defaultRotSpeed = sketch.random(-0.4, 0.4);
         this.rotation = sketch.random() * Math.PI * 2;
     }
