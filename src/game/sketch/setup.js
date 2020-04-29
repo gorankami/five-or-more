@@ -4,6 +4,7 @@ import config from "../../game.config.json"
 
 import { getThreeRandomSprites } from "../getThreeRandomSprites";
 import { TableCell } from "../entities/TableCell";
+import { Score } from "../entities/Score";
 
 export function setup() {
     const { sketch } = state;
@@ -12,6 +13,7 @@ export function setup() {
     setupTable();
     state.nextThree = getThreeRandomSprites();
     next(state.table);
+    state.score = new Score()
 };
 
 function setupTable() {
@@ -27,12 +29,12 @@ function setupTable() {
 
 export function updateTableSize(){
     const { left, right, top, bottom } = config.tableMargin
-    state.tableWidth = window.innerWidth - left - right
-    state.tableHeight = window.innerHeight - top - bottom
-    if (state.tableWidth > state.tableHeight) {
-        state.cellSize = state.tableHeight / config.rows;
+    const tableWidth = window.innerWidth - left - right
+    const tableHeight = window.innerHeight - top - bottom
+    if (tableWidth > tableHeight) {
+        state.cellSize = tableHeight / config.rows;
     } else {
-        state.cellSize = state.tableWidth / config.columns;
+        state.cellSize = tableWidth / config.columns;
     }
 }
 

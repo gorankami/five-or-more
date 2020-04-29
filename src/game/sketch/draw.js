@@ -28,7 +28,7 @@ export function draw() {
         if (state.points[i].canBeDestroyed) state.points.splice(i, 1)
     }
 
-    const circleY = state.tableHeight + config.tableMargin.top + 20
+    const circleY = state.cellSize * config.columns + config.tableMargin.top + 20
     const circleW = state.cellSize / 2;
     state.nextThree.forEach((img, i) => {
         sketch.image(img, 20 + i * (circleW + 20), circleY, circleW, circleW);
@@ -55,11 +55,13 @@ export function draw() {
 
                     m.img = undefined;
                 })
+                state.score.value += clearArray.length * 10;
+                state.score.startAnimation()
             }
         } else {
             state.movingMarble.draw(sketch);
             state.movingMarble.update(sketch);
         }
-
     }
+    state.score.draw()
 };

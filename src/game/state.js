@@ -7,5 +7,6 @@ export const state = {
     selected: undefined,
     images: [],
     points: [],
-    cellSize: undefined
+    cellSize: undefined,
+    score: undefined
 }
