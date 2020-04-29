@@ -1,31 +1,31 @@
 
 import config from "../../game.config.json"
 
-/**
- * Matrix operation
- * @desc rotates the matrix by 45 degrees making diagonals turn into rows. The direction is analog to forward slash
- * @example [[a11,a12],[a21,a22]] -> [[a11, null],[a12,a21],[null,a22]]
- * @param matrix nxm
- * @returns {Array} new matrix nxm with mirrored values
- */
 export function diagonalizeMatrix(matrix) {
-    let diagonalizedTable = [];
-    for (let j = 0; j < config.columns + config.rows - 1; j++) {
-      let row = [];
-      for (let i = j; i >= 0; i--) {
-        if (i < config.rows && (j - i) < config.columns) {
-          row.push(matrix[i][j - i]);
-        } else {
-          row.push(null);
-        }
+  let diagonalizedTable = [];
+  let min = 0
+  let max = 0
+  while (min < config.columns) {
+    let row = [];
+    if (max < config.columns - 1) {
+      for (let i = min; i <= max; i++) {
+        row.push(matrix[max - i][i])
       }
-      diagonalizedTable.push(row);
-    }
-    //fix missing cells
-    for (let i = 0; i < config.columns + config.rows - 1; i++) {
-      for (let j = 0; j < config.columns + config.rows - 1; j++) {
-        if (!diagonalizedTable[i][j]) diagonalizedTable[i][j] = null;
+      max++;
+    } else {
+      for (let i = 0; i <= max - min; i++) {
+        row.push(matrix[max - i][i + min])
       }
+      min++;
     }
-    return diagonalizedTable;
+
+    diagonalizedTable.push(row);
   }
+  for (let i = 0; i < config.columns; i++) {
+    for (let j = 0; j < config.columns; j++) {
+      if (!diagonalizedTable[i][j]) diagonalizedTable[i][j] = null;
+    }
+  }
+
+  return diagonalizedTable;
+}
