@@ -1,6 +1,7 @@
 import getXY from "../getXY";
 
 import { state } from "../state";
+import p5 from "p5";
 
 export class TableCell {
     constructor(i, j, img) {
@@ -8,12 +9,13 @@ export class TableCell {
         this.j = j;
         this.img = img;
         const { x, y } = getXY(i, j)
-        this.x = x;
-        this.y = y;
+        this.position = new p5.Vector(x, y)
     }
 
     draw(sketch) {
         const { cellSize } = state;
+        const { x, y } = getXY(this.i, this.j)
+        this.position = new p5.Vector(x, y)
         sketch.push();
         sketch.stroke('rgba(204, 102, 0,0.2)');
         if (this === state.selected) {
@@ -21,10 +23,10 @@ export class TableCell {
         } else {
             sketch.fill('rgba(255, 255, 255, 0.4)');
         }
-        sketch.rect(this.x, this.y, cellSize, cellSize);
+        sketch.rect(this.position.x, this.position.y, cellSize, cellSize);
 
         if (this.img) {
-            sketch.image(this.img, this.x, this.y, cellSize, cellSize);
+            sketch.image(this.img, this.position.x, this.position.y, cellSize, cellSize);
         }
         sketch.pop();
     }

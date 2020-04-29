@@ -1,4 +1,5 @@
 import { state } from "../state";
+import { updateTableSize } from "./setup";
 // import config from "../../game.config.json"
 
 export function windowResized() {
@@ -11,4 +12,5 @@ export function windowResized() {
     // } else {
     //     state.cellSize = state.tableWidth / config.columns;
     // }
+    updateTableSize()
 }

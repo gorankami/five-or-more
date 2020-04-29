@@ -6,5 +6,6 @@ export const state = {
     particles: [],
     selected: undefined,
     images: [],
-    points: []
+    points: [],
+    cellSize: undefined
 }

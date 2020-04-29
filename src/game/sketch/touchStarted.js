@@ -10,7 +10,7 @@ export function touchStarted() {
     for (let i = 0; i < state.table.length; i++) {
         for (let j = 0; j < state.table.length; j++) {
             const e = state.table[i][j];
-            if (e.x <= mouseX && mouseX < e.x + state.cellSize && e.y <= mouseY && mouseY < e.y + state.cellSize) {
+            if (e.position.x <= mouseX && mouseX < e.position.x + state.cellSize && e.position.y <= mouseY && mouseY < e.position.y + state.cellSize) {
                 found = true;
                 if (e === state.selected) {
                     state.selected = undefined;
