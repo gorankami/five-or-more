@@ -1,6 +1,7 @@
 
 import getXY from "../getXY";
 import { state } from "../state";
+import p5 from "p5";
 
 export class MovingMarble {
     constructor(i, j, img, e) {
@@ -9,8 +10,8 @@ export class MovingMarble {
         this.j = j;
         this.img = img;
         const { x, y } = getXY(i, j)
-        this.x = x;
-        this.y = y;
+        this.position = new p5.Vector(x, y)
+        this.startPosition = this.position;
         this.isForDeletion = false;
     }
 
@@ -22,19 +23,20 @@ export class MovingMarble {
 
     animateStep(i, j) {
         const { x, y } = getXY(i, j)
-        this.targetX = x
-        this.targetY = y
+        this.targetPosition = new p5.Vector(x, y)
         this.elapsed = 0;
-        this.time = 0.02;
+        this.time = 0.05;
     }
 
     update(sketch) {
         if (this.isForDeletion) return;
         if (this.elapsed < this.time) {
+            this.position = p5.Vector.lerp(this.startPosition, this.targetPosition, this.elapsed/this.time);
+                
             this.elapsed += 1 / sketch.frameRate();
         } else {
-            this.x = this.targetX;
-            this.y = this.targetY;
+            this.position = this.targetPosition;
+            this.startPosition = this.position;
             if (this.path.length) {
                 const { i, j } = this.path.splice(0, 1)[0];
                 this.animateStep(i, j)
@@ -47,6 +49,6 @@ export class MovingMarble {
     draw(sketch) {
         if (this.isForDeletion) return;
         const { cellSize } = state;
-        sketch.image(this.img, this.x, this.y, cellSize, cellSize)
+        sketch.image(this.img, this.position.x, this.position.y, cellSize, cellSize)
     }
 }
