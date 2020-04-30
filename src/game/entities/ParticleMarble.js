@@ -1,10 +1,8 @@
-import getXY from "../getXY";
 import { state } from "../state";
 import { easeOutQuad, easeOutQuint } from "js-easing-functions";
 
 export class ParticleMarble {
-    constructor(i, j, img, sketch) {
-        const { x, y } = getXY(i, j)
+    constructor(x, y, img, sketch) {
         this.size = state.cellSize;
         this.img = img;
         this.position = sketch.createVector(x + this.size / 2, y + this.size / 2);

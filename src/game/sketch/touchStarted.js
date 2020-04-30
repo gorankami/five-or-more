@@ -1,8 +1,20 @@
 import { findPath } from "../tableOperations";
-import { state } from "../state";
+import { state, GAME_STATE_INSTRUCTIONS, GAME_STATE_TIMER, GAME_STATE_PLAYING } from "../state";
 import { MovingMarble } from "../entities/MovingMarble";
 
 export function touchStarted() {
+    switch (state.gameState) {
+        case GAME_STATE_INSTRUCTIONS:
+            state.gameState = GAME_STATE_PLAYING;
+            return;
+        case GAME_STATE_TIMER:
+            return;
+        default:
+            touchStartedPlaying()
+    }
+}
+
+function touchStartedPlaying() {
     const { sketch } = state;
     if (!state.isUserInputAllowed) return;
     const { mouseX, mouseY } = sketch;
@@ -38,5 +50,5 @@ export function touchStarted() {
         }
         if (found) break;
     }
-    state.table.forEach(r => r.forEach(c => c.draw(sketch)))
+    // state.table.forEach(r => r.forEach(c => c.draw(sketch)))
 }

@@ -1,11 +1,51 @@
-import { state } from "../state";
+import { state, GAME_STATE_INSTRUCTIONS, GAME_STATE_TIMER } from "../state";
 import config from "../../game.config.json"
 import { clearFiveOrMore } from "../tableOperations";
 import { next } from "../next";
 import { ParticleMarble } from "../entities/ParticleMarble";
 import { Points } from "../entities/Points";
+import { Instructions } from "../entities/Instructions";
+import getXY from "../getXY";
+
 
 export function draw() {
+    switch (state.gameState) {
+        case GAME_STATE_INSTRUCTIONS:
+            drawInstructions()
+            break;
+        case GAME_STATE_TIMER:
+            drawTimer()
+            break;
+        default:
+            drawGame();
+    }
+}
+
+const instructions = new Instructions();
+
+function drawInstructions() {
+    if (!instructions.startTime) instructions.startTime = (new Date()).getTime()
+    const instructionText = "Instructions:\nYou need to match 5 in a row.\nYou can go horizontally, vertically and diagonally\n1. Click on one that you would like to move\n2. Click on location\nNote: movement not possible if there is no path"
+    const { sketch } = state;
+    sketch.background(state.bg || 200);
+    sketch.push()
+    sketch.textSize(window.innerWidth > 770 ? 35 : window.innerWidth > 440 ? 20 : 10)
+
+    sketch.textAlign(sketch.CENTER)
+    sketch.fill("white")
+    sketch.text(instructionText, window.innerWidth / 2, 100)
+    instructions.update();
+    instructions.draw();
+    sketch.pop();
+}
+
+function drawTimer() {
+    const { sketch } = state;
+    sketch.background(state.bg || 200);
+    sketch.text("Timer", 100, 100)
+}
+
+function drawGame() {
     const { sketch } = state;
     sketch.background(state.bg || 200);
     state.table.forEach(r => r.forEach(c => c.draw(sketch)))
@@ -49,7 +89,8 @@ export function draw() {
                     let numParticles = 10
                     while (numParticles > 0) {
                         numParticles--;
-                        state.particles.push(new ParticleMarble(m.i, m.j, m.img, sketch))
+                        const { x, y } = getXY(m.i, m.j)
+                        state.particles.push(new ParticleMarble(x, y, m.img, sketch))
                     }
                     state.points.push(new Points(m.i, m.j, "10", sketch))
 
