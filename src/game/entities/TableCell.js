@@ -2,6 +2,7 @@ import getXY from "../getXY";
 
 import { state } from "../state";
 import p5 from "p5";
+import { easeInQuad } from "js-easing-functions";
 
 export class TableCell {
     constructor(i, j, img) {
@@ -10,10 +11,20 @@ export class TableCell {
         this.img = img;
         const { x, y } = getXY(i, j)
         this.position = new p5.Vector(x, y)
+        this.startTime = (new Date()).getTime()
+        this.duration = 200
+        this.sizeMod = state.cellSize
     }
-
-    draw(sketch) {
-        const { cellSize } = state;
+    update() {
+        const currentTime = (new Date()).getTime() - this.startTime;
+        if (currentTime > this.duration) {
+            this.sizeMod = 1
+        } else {
+            this.sizeMod = easeInQuad(currentTime, 0.5, 0.5, this.duration)
+        }
+    }
+    draw() {
+        const { cellSize, sketch } = state;
         const { x, y } = getXY(this.i, this.j)
         this.position = new p5.Vector(x, y)
         sketch.push();
@@ -26,7 +37,8 @@ export class TableCell {
         sketch.rect(this.position.x, this.position.y, cellSize, cellSize);
 
         if (this.img) {
-            sketch.image(this.img, this.position.x, this.position.y, cellSize, cellSize);
+            const size = this.sizeMod * cellSize
+            sketch.image(this.img, this.position.x - size/2 + cellSize/2, this.position.y - size/2 + cellSize/2, size, size);
         }
         sketch.pop();
     }

@@ -1,6 +1,8 @@
 import { findPath } from "../tableOperations";
 import { state, GAME_STATE_INSTRUCTIONS, GAME_STATE_TIMER, GAME_STATE_PLAYING } from "../state";
 import { MovingMarble } from "../entities/MovingMarble";
+import { getThreeRandomSprites } from "../getThreeRandomSprites";
+import { next } from "../next";
 
 export function touchStarted() {
     switch (state.gameState) {

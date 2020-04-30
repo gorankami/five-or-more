@@ -48,7 +48,10 @@ function drawTimer() {
 function drawGame() {
     const { sketch } = state;
     sketch.background(state.bg || 200);
-    state.table.forEach(r => r.forEach(c => c.draw(sketch)))
+    state.table.forEach(r => r.forEach(c => {
+        c.update()
+        c.draw()
+    }))
 
 
     state.particles.forEach(p => {

@@ -5,7 +5,10 @@ import { getThreeRandomSprites } from "./getThreeRandomSprites";
 export function next(table) {
     state.nextThree.forEach(img => {
         const tableCell = getAnyClearMarble(table);
-        if (tableCell) tableCell.img = img;
+        if (tableCell) {
+            tableCell.img = img;
+            tableCell.startTime = (new Date()).getTime()
+        }
     });
 
     state.nextThree = getThreeRandomSprites();

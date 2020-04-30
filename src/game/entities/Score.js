@@ -27,7 +27,6 @@ export class Score {
         sketch.textSize(this.scoreSize)
         sketch.fill("white")
         sketch.text(this.value, tableSize + left, tableSize + top)
-        console.log()
         sketch.pop()
     }
 
