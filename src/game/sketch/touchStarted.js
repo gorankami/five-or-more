@@ -40,6 +40,8 @@ function touchStartedPlaying() {
 
                             state.selected.img = undefined
                             state.selected = undefined;
+                        } else {
+                            state.isUserInputAllowed = true;
                         }
                     } else if (e.img) {
                         state.selected = e;
