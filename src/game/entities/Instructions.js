@@ -22,11 +22,11 @@ export class Instructions {
                 let numParticles = 10
                 while (numParticles > 0) {
                     numParticles--;
-                    this.particles.push(new ParticleMarble(window.innerWidth / 2 - halfSize * 18, state.cellSize, state.images[2], sketch))
-                    this.particles.push(new ParticleMarble(window.innerWidth / 2 - halfSize * 16, state.cellSize, state.images[2], sketch))
-                    this.particles.push(new ParticleMarble(window.innerWidth / 2 - halfSize * 14, state.cellSize, state.images[2], sketch))
-                    this.particles.push(new ParticleMarble(window.innerWidth / 2 - halfSize * 12, state.cellSize, state.images[2], sketch))
-                    this.particles.push(new ParticleMarble(window.innerWidth / 2 - halfSize * 10, state.cellSize, state.images[2], sketch))
+                    this.particles.push(new ParticleMarble( - halfSize * 5, state.cellSize, state.images[2], sketch))
+                    this.particles.push(new ParticleMarble(- halfSize * 3, state.cellSize, state.images[2], sketch))
+                    this.particles.push(new ParticleMarble(- halfSize, state.cellSize, state.images[2], sketch))
+                    this.particles.push(new ParticleMarble(halfSize, state.cellSize, state.images[2], sketch))
+                    this.particles.push(new ParticleMarble(halfSize * 3, state.cellSize, state.images[2], sketch))
                 }
             }
             if (currentTime > this.duration) {
