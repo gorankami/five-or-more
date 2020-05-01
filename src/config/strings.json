@@ -1,0 +1,22 @@
+{
+    "fontFamily": "https://fonts.googleapis.com/css?family=Russo+One",
+    "title": "Game Template",
+    "instructions1": "This is an extension of the P5 Scaffold with added functionalities",
+    "instructions2": "Some of the stuff included:",
+    "instructions3": "Main menu, sound button, scaling, custom fonts, leaderboard, camera",
+    "gameOverText": "GAME OVER",
+    "highScoreText": "High Score:",
+    "playButtonText": " PLAY ",
+    "scoreText": "Score:",
+    "highscoreText": "High Score:",
+    "highscoreGainedText": "New High Score!",
+    "health": "3",
+    "lives": 3,
+    "scoreGain": 1,
+    "enableCursor": true,
+    "leaderboardButtonText": "LEADERBOARD",
+    "emailInputEnabled": true,
+    "optInText": "Keep me updated!",
+    "maxParticles": 150,
+    "maxParticlesMobile": 50
+}

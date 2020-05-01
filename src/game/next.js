@@ -7,7 +7,7 @@ export function next(table) {
         const tableCell = getAnyClearMarble(table);
         if (tableCell) {
             tableCell.img = img;
-            tableCell.startTime = (new Date()).getTime()
+            tableCell.appear();
         }
     });
 

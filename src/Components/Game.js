@@ -7,7 +7,7 @@ import { getSketch } from '../game/sketch';
 export default class Game extends Component {
   constructor(props) {
     super(props);
-    this.placeholderRef = React.createRef();
+    // this.placeholderRef = React.createRef();
   }
   componentDidMount() {
     try {
@@ -28,8 +28,8 @@ export default class Game extends Component {
 
   render() {
     return (
-      <div ref={this.placeholderRef}> </div>
-    );
+      <div ref={placeholderRef => this.placeholderRef = placeholderRef} />
+  );
   }
 }
 

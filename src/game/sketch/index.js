@@ -13,5 +13,8 @@ export const getSketch = sketch => {
     sketch.setup = setup;
     sketch.draw = draw
     sketch.mousePressed = touchStarted
+    sketch.touchEnded = function(){
+        return false;
+    }
     sketch.windowResized = windowResized
 };

@@ -1,3 +1,4 @@
+import Koji from '../../config' //'@withkoji/vcc';
 import { state, GAME_STATE_INSTRUCTIONS, GAME_STATE_TIMER } from "../state";
 import config from "../../game.config.json"
 import { clearFiveOrMore } from "../tableOperations";
@@ -27,7 +28,9 @@ function drawInstructions() {
     if (!instructions.startTime) instructions.startTime = (new Date()).getTime()
     const instructionText = "Instructions:\nYou need to match 5 in a row.\nYou can go horizontally, vertically and diagonally\n1. Click on one that you would like to move\n2. Click on location\nNote: movement not possible if there is no path"
     const { sketch } = state;
-    sketch.background(state.bg || 200);
+
+    sketch.background(state.bg || Koji.config.colors.backgroundColor);
+  
     sketch.push()
     sketch.textSize(window.innerWidth > 770 ? 35 : window.innerWidth > 440 ? 20 : 10)
 
@@ -47,7 +50,8 @@ function drawTimer() {
 
 function drawGame() {
     const { sketch } = state;
-    sketch.background(state.bg || 200);
+    sketch.background(state.bg || Koji.config.colors.backgroundColor);
+   
     state.table.forEach(r => r.forEach(c => {
         c.update()
         c.draw()
@@ -74,7 +78,7 @@ function drawGame() {
     const circleY = state.cellSize * config.columns + config.tableMargin.top + 20
     const circleW = state.cellSize / 2;
     state.nextThree.forEach((img, i) => {
-        sketch.image(img, 20 + i * (circleW + 20), circleY, circleW, circleW);
+        sketch.image(img, config.tableMargin.left + i * (circleW + 20), circleY, circleW, circleW);
     });
 
     if (state.movingMarble) {
@@ -96,7 +100,7 @@ function drawGame() {
                         state.particles.push(new ParticleMarble(x, y, m.img, sketch))
                     }
                     state.points.push(new Points(m.i, m.j, "10", sketch))
-
+                    if (state.explodeSound) state.explodeSound.play();
                     m.img = undefined;
                 })
                 state.score.value += clearArray.length * 10;

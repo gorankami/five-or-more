@@ -25,6 +25,7 @@ function touchStartedPlaying() {
             if (e.position.x <= mouseX && mouseX < e.position.x + state.cellSize && e.position.y <= mouseY && mouseY < e.position.y + state.cellSize) {
                 found = true;
                 if (e === state.selected) {
+                    e.deselect()
                     state.selected = undefined;
                 } else {
                     if (e.img === undefined && state.selected) {
@@ -40,11 +41,15 @@ function touchStartedPlaying() {
 
                             state.selected.img = undefined
                             state.selected = undefined;
+                            if (state.tapDestinationSound) state.tapDestinationSound.play();
                         } else {
+                            if (state.badDestinationSound) state.badDestinationSound.play();
                             state.isUserInputAllowed = true;
                         }
                     } else if (e.img) {
                         state.selected = e;
+                        e.select()
+                        if (state.selectSound) state.selectSound.play();
                     }
                 }
                 break;
@@ -53,4 +58,5 @@ function touchStartedPlaying() {
         if (found) break;
     }
     // state.table.forEach(r => r.forEach(c => c.draw(sketch)))
+    return false
 }
