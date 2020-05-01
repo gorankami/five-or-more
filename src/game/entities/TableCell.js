@@ -1,8 +1,7 @@
 import getXY from "../getXY";
-
 import { state } from "../state";
-import p5 from "p5";
-import { easeInQuad } from "js-easing-functions";
+import { easeInOutBack } from "js-easing-functions";
+/* global p5 */
 
 export class TableCell {
     constructor(i, j, img) {
@@ -20,7 +19,7 @@ export class TableCell {
         if (currentTime > this.duration) {
             this.sizeMod = 1
         } else {
-            this.sizeMod = easeInQuad(currentTime, 0.5, 0.5, this.duration)
+            this.sizeMod = easeInOutBack(currentTime, 0.5, 0.5, this.duration)
         }
     }
     draw() {

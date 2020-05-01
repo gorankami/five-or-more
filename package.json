@@ -9,7 +9,6 @@
     "@testing-library/user-event": "^7.1.2",
     "javascript-astar": "^0.4.1",
     "js-easing-functions": "^1.0.3",
-    "p5": "^1.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.1"

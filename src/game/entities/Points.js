@@ -1,7 +1,7 @@
 import getXY from "../getXY";
 import { state } from "../state";
 import { easeOutQuint, easeOutSine, easeInExpo } from "js-easing-functions";
-import { Vector } from "p5";
+/* global p5 */
 
 export class Points {
     constructor(i, j, txt, sketch) {
@@ -11,7 +11,7 @@ export class Points {
         this.maxSize = state.cellSize * 0.75;
         this.alpha = 1
         this.txt = txt;
-        this.position = new Vector(x, y);
+        this.position = new p5.Vector(x, y);
         this.initialPosition = sketch.createVector(x, y);
         this.timer = 1;
         this.sizeMod = 1;

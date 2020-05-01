@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import p5 from 'p5';
 import './Game.css';
 import "../game/tableOperations"
 import { getSketch } from '../game/sketch';
+/* global p5 */
 
 export default class Game extends Component {
   constructor(props) {

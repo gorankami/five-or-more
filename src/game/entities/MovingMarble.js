@@ -1,7 +1,7 @@
 
 import getXY from "../getXY";
 import { state } from "../state";
-import p5 from "p5";
+/* global p5 */
 
 export class MovingMarble {
     constructor(i, j, img, e) {
