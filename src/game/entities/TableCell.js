@@ -1,6 +1,6 @@
 import getXY from "../getXY";
 import { state } from "../state";
-import { easeInQuad, easeInOutBack } from "js-easing-functions";
+import { easeInQuad, easeInOutBack, easeInBack } from "js-easing-functions";
 /* global p5 */
 
 export class TableCell {
@@ -31,7 +31,7 @@ export class TableCell {
             if (currentTime > this.duration) {
                 this.sizeMod = 1.2
             } else {
-                this.sizeMod = easeInOutBack(currentTime, 1, 0.5, this.duration)
+                this.sizeMod = easeInOutBack(currentTime, 1, 0.2, this.duration)
             }
         }
     }
@@ -42,7 +42,7 @@ export class TableCell {
             if (currentTime > this.duration) {
                 this.sizeMod = 1
             } else {
-                this.sizeMod = easeInOutBack(currentTime, 1, 0.5, this.duration)
+                this.sizeMod = easeInBack(currentTime, 1.2, -0.2, this.duration)
             }
         }
     }
